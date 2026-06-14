@@ -62,7 +62,7 @@ const initialNodes: Node[] = [
                 { name: "travel-planning", description: "旅行规划 SOP：拆分维度、冲突协调、行程模板" },
                 { name: "conflict-resolution", description: "Plan 阶段多 Agent 冲突协调方法论" },
             ],
-            humanSteering: "",
+            humanSteering: "我喜欢吃，所以说一切计划以美食为中心！麻溜滴！速速！！",
         } satisfies OrchestratorData,
     },
 ];
