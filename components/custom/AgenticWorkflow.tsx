@@ -9,25 +9,41 @@ import {
     useEdgesState,
     useReactFlow,
     addEdge,
+    MarkerType,
     type OnConnect,
     type Node,
     type Edge,
 } from "@xyflow/react";
 import OrchestratorNode from "./Orchestrator";
 import Subagent from "./Subagent";
-import type { OrchestratorData , SubagentData } from "@/types/workflow";
+import ExternalKB from "./ExternalKB";
+import type { OrchestratorData , SubagentData, KnowledgeBaseData } from "@/types/workflow";
 import { computeLayout } from "@/lib/layout";
 import { useSidebar } from "@/context/SidebarContext";
 
 const nodeTypes = {
     orchestrator: OrchestratorNode,
     subagent: Subagent,
+    knowledgeBase: ExternalKB,
 };
 
 // MOCK DATA
 const layout = computeLayout(3);
 
 const initialNodes: Node[] = [
+    {
+        id: "knowledge-base",
+        type: "knowledgeBase",
+        position: layout.knowledgeBase,
+        data: {
+            label: "Knowledge Base",
+            status: "idle",
+            source: "RAG / 个人数据库",
+            documentCount: 0,
+            files: [],
+            folderName: "",
+        } satisfies KnowledgeBaseData,
+    },
     {
         id: "orchestrator-1",
         type: "orchestrator",
@@ -147,9 +163,9 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", animated: true, style: { stroke: "#525252" } },
-    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", animated: true, style: { stroke: "#525252" } },
-    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", animated: true, style: { stroke: "#525252" } },
+    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", animated: true, style: { stroke: "#525252" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
+    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", animated: true, style: { stroke: "#525252" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
+    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", animated: true, style: { stroke: "#525252" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
 ];
 
 function FlowInner() {
@@ -159,7 +175,17 @@ function FlowInner() {
     const { fitView } = useReactFlow();
 
     const onConnect: OnConnect = useCallback(
-        (params) => setEdges((es) => addEdge(params, es)),
+        (params) => {
+            const isKBtoOrch = params.source === "knowledge-base" && params.target === "orchestrator-1";
+            const isOrchtoSubagent = params.source === "orchestrator-1" && params.target.startsWith("subagent-");
+            setEdges((es) => addEdge({
+                ...params,
+                animated: true,
+                style: { stroke: isKBtoOrch ? "#d97706" : "#525252" },
+                ...(isKBtoOrch ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#d97706", width: 40, height: 40 } } : {}),
+                ...(isOrchtoSubagent ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } } : {}),
+            }, es));
+        },
         [setEdges],
     );
 

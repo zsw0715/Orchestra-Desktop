@@ -90,6 +90,8 @@ export interface KnowledgeBaseData extends Record<string, unknown> {
     status: AgentStatus;
     source: string;                 // "RAG / 个人数据库"
     documentCount: number;          // 已索引文档数
+    files: string[];                // 已索引文件名
+    folderName: string;             // 选中的文件夹名称
 }
 
 /** Research 调研产出节点（Phase 1，每个 Subagent 下方一个） */
