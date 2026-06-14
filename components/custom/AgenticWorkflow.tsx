@@ -166,9 +166,9 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", animated: true, style: { stroke: "#525252" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
-    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", animated: true, style: { stroke: "#525252" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
-    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", animated: true, style: { stroke: "#525252" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
+    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", animated: true, style: { stroke: "#fbcfe8" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
+    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", animated: true, style: { stroke: "#fbcfe8" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
+    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", animated: true, style: { stroke: "#fbcfe8" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
 ];
 
 function FlowInner() {
@@ -187,7 +187,7 @@ function FlowInner() {
                 animated: true,
                 style: { stroke: isKBtoOrch ? "#d97706" : "#525252" },
                 ...(isKBtoOrch ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#d97706", width: 40, height: 40 } } : {}),
-                ...(isOrchtoSubagent ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } } : {}),
+                ...(isOrchtoSubagent ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#fbcfe8", width: 30, height: 30 } } : {}),
             }, es));
         },
         [setEdges],
