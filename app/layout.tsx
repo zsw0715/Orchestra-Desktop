@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import { SidebarProvider } from "@/context/SidebarContext";
+import { WorkflowProvider } from "@/context/WorkflowContext";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
+const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -33,9 +34,11 @@ export default function RootLayout({
             suppressHydrationWarning
         >
             <body className="h-full flex flex-col bg-[#1e1e1f]/45 p-1 overflow-hidden">
-                <SidebarProvider>
-                    {children}
-                </SidebarProvider>
+                <WorkflowProvider>
+                    <SidebarProvider>
+                        {children}
+                    </SidebarProvider>
+                </WorkflowProvider>
             </body>
         </html>
     );
