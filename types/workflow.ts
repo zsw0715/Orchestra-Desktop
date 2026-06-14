@@ -19,9 +19,38 @@ export type WorkflowPhase =
     | "write";                      // Phase 3: Write — 最终产出
 
 // ============================================================
+// 共享微类型
+// ============================================================
+export interface ToolRef {
+    name: string;
+    description: string;
+}
+
+export interface SkillRef {
+    name: string;
+    description: string;
+}
+
+export interface SubagentRef {
+    name: string;
+    description: string;
+    /** 对应的 Subagent 节点 ID */
+    nodeId: string;
+    status: AgentStatus;
+}
+
+/** AutoGen 群聊中的一条消息 */
+export interface ChatMessage {
+    role: string;                   // "住宿Agent" | "美食Agent" | "orchestrator" | "human"
+    content: string;
+    timestamp: string;
+}
+
+// ============================================================
 // 节点 data 类型
 // ============================================================
-/** Orchestrator 节点的 data */
+
+/** Orchestrator 编排节点的 data */
 export interface OrchestratorData extends Record<string, unknown> {
     label: string;
     phase: WorkflowPhase;
@@ -34,37 +63,65 @@ export interface OrchestratorData extends Record<string, unknown> {
     reasoning: boolean;
     maxRounds: number;
     subagents: SubagentRef[];
-    tools: ToolRef[];               // 可调用工具
-    skills: SkillRef[];             // 可加载技能
-    humanSteering: string | null;   // 人类修正指令
+    tools: ToolRef[];
+    skills: SkillRef[];
+    humanSteering: string | null;
 }
 
-export interface SubagentRef {
-    name: string;
-    description: string;
-    nodeId: string;
-    status: AgentStatus;
-}
-
-export interface ToolRef {
-    name: string;
-    description: string;
-}
-
-export interface SkillRef {
-    name: string;
-    description: string;
-}
-
-/** SubAgent（领域 Agent）节点的 data */
+/** Subagent 领域 Agent 节点的 data */
 export interface SubagentData extends Record<string, unknown> {
     label: string;
     role: string;
     description: string;
     status: AgentStatus;
     phase: WorkflowPhase;
-    tools: string[];
-    findings: string | null;
+    model: string;
+    model_icon: string;
+    temperature: number;
+    maxTokens: number;
+    reasoning: boolean;
+    tools: ToolRef[];
+    skills: SkillRef[];
+}
+
+/** KnowledgeBase 外挂知识库节点的 data */
+export interface KnowledgeBaseData extends Record<string, unknown> {
+    label: string;
+    status: AgentStatus;
+    source: string;                 // "RAG / 个人数据库"
+    documentCount: number;          // 已索引文档数
+}
+
+/** Research 调研产出节点（Phase 1，每个 Subagent 下方一个） */
+export interface ResearchData extends Record<string, unknown> {
+    label: string;
+    status: AgentStatus;
+    subagentId: string;             // 归属的 Subagent 节点 ID
+    findings: string[];             // 调研发现列表
+}
+
+/** Plan 群聊协调节点（Phase 2，长条单节点） */
+export interface PlanData extends Record<string, unknown> {
+    label: string;
+    status: AgentStatus;
+    summary: string;                // 群聊摘要（显示在节点上）
+    messages: ChatMessage[];        // 完整群聊记录
+}
+
+/** Write 撰写节点（Phase 3，每个 Subagent 一个） */
+export interface WriteData extends Record<string, unknown> {
+    label: string;
+    status: AgentStatus;
+    subagentId: string;             // 归属的 Subagent 节点 ID
+    content: string;                // 该 Agent 撰写的章节内容
+}
+
+/** Output 最终产出节点（Phase 3，汇总所有 Write） */
+export interface OutputData extends Record<string, unknown> {
+    label: string;
+    status: AgentStatus;
+    content: string;                // 拼接后全文
+    mergedFrom: string[];           // 来源 Write 节点 ID 列表
 }
 
 // ============================================================
@@ -79,7 +136,7 @@ export interface WorkflowState {
         string,
         {
             status: AgentStatus;
-            output: string | null;
+            output: string | null;  
             humanFeedback: string | null;
         }
     >;
@@ -95,4 +152,11 @@ export interface WorkflowMessage {
 // ============================================================
 // React Flow 整合类型
 // ============================================================
-export type AppNode = Node<OrchestratorData, "orchestrator"> | Node<SubagentData, "subagent">;
+export type AppNode =
+    | Node<OrchestratorData, "orchestrator">
+    | Node<SubagentData, "subagent">
+    | Node<KnowledgeBaseData, "knowledgeBase">
+    | Node<ResearchData, "research">
+    | Node<PlanData, "plan">
+    | Node<WriteData, "write">
+    | Node<OutputData, "output">;

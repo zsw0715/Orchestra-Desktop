@@ -1,0 +1,109 @@
+/**
+ * 非 dagre 手搓布局：Orchestrator 在上，N 个 Subagent 在下一行居中排开。
+ *
+ * 外层节点（KB / Orchester / Research Group / Plan / Write Group）：
+ *   垂直堆叠，水平居中。
+ * Group 内节点（Subagent + Research / Write + Output）：
+ *   水平排开 + 垂直堆叠。
+ * Group 尺寸根据子节点数量动态计算。
+ */
+
+export interface OrchLayout {
+    x: number;
+    y: number;
+}
+
+export interface SubLayout {
+    x: number;
+    y: number;
+}
+
+interface ComputeLayoutResult {
+    orchestrator: OrchLayout;
+    subagents: SubLayout[];
+}
+
+const ORCH_X = 400;
+const ORCH_Y = 100;
+const ORCH_HALF_WIDTH = 210; // Orchestrator w-105 ≈ 420px / 2
+
+const SUB_WIDTH = 320; // Subagent w-75 ≈ 300px + 预留间距
+const SUB_GAP = 80;
+const SUB_Y_OFFSET = 560;
+
+/** 计算 Orchester 下方 N 个 Subagent 的居中水平排布坐标 */
+export function computeLayout(subCount: number): ComputeLayoutResult {
+    const totalWidth = subCount * SUB_WIDTH + (subCount - 1) * SUB_GAP;
+    const startX = ORCH_X + ORCH_HALF_WIDTH - totalWidth / 2;
+
+    const subagents: SubLayout[] = Array.from({ length: subCount }, (_, i) => ({
+        x: startX + i * (SUB_WIDTH + SUB_GAP),
+        y: ORCH_Y + SUB_Y_OFFSET,
+    }));
+
+    return {
+        orchestrator: { x: ORCH_X, y: ORCH_Y },
+        subagents,
+    };
+}
+
+/**
+ * Research Group 内布局：
+ *   顶部一行 Subagent 节点
+ *   每个 Subagent 下方跟一个 Research 节点
+ */
+export interface ResearchGroupLayout {
+    groupX: number;
+    groupY: number;
+    groupWidth: number;
+    groupHeight: number;
+    subagents: {
+        id: string;
+        x: number;
+        y: number;
+    }[];
+    research: {
+        id: string;
+        x: number;
+        y: number;
+    }[];
+}
+
+const GROUP_PADDING_X = 24;
+const GROUP_PADDING_TOP = 48;
+const GROUP_PADDING_BOTTOM = 24;
+const SUB_H = 320; // h-80
+const RESEARCH_H = 120;
+const V_GAP = 20; // Sub 底部到 Research 顶部
+
+export function computeResearchGroupLayout(
+    groupX: number,
+    groupY: number,
+    subIds: string[],
+    researchIds: string[],
+): ResearchGroupLayout {
+    const count = subIds.length;
+    const totalWidth = count * SUB_WIDTH + (count - 1) * SUB_GAP;
+    const contentHeight = GROUP_PADDING_TOP + SUB_H + V_GAP + RESEARCH_H;
+
+    const subagents = subIds.map((id, i) => ({
+        id,
+        x: GROUP_PADDING_X + i * (SUB_WIDTH + SUB_GAP),
+        y: GROUP_PADDING_TOP,
+    }));
+
+    const research = researchIds.map((id, i) => ({
+        id,
+        x: GROUP_PADDING_X + i * (SUB_WIDTH + SUB_GAP) + 20, // 稍微居中
+        y: GROUP_PADDING_TOP + SUB_H + V_GAP,
+    }));
+
+    return {
+        groupX,
+        groupY,
+        groupWidth: GROUP_PADDING_X * 2 + totalWidth,
+        groupHeight: contentHeight + GROUP_PADDING_BOTTOM,
+        subagents,
+        research,
+    };
+}

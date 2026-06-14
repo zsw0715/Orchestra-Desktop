@@ -18,10 +18,10 @@ const statusBorder: Record<OrchestratorData["status"], string> = {
 
 const statusGlow: Record<OrchestratorData["status"], string> = {
     idle: "",
-    thinking: "bg-blue-300 blur-sm animate-rotate",
-    waiting_human: "bg-amber-300 blur-sm animate-pulse",
-    done: "bg-emerald-300 blur-sm scale-100",
-    error: "bg-red-300 blur-sm animate-pulse",
+    thinking: "bg-blue-300 blur-xs animate-rotate",
+    waiting_human: "bg-amber-300 blur-xs animate-pulse",
+    done: "bg-emerald-300 blur-xs animate-pulse",
+    error: "bg-red-300 blur-xs blur-xs",
 };
 
 const phaseLabel: Record<OrchestratorData["phase"], string> = {
@@ -50,8 +50,10 @@ const arePropsEqual = (prev: NodeProps, next: NodeProps) => {
 
 const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
     const d = data as unknown as OrchestratorData;
-    const { updateNodeData } = useReactFlow();
+    const { updateNodeData, fitView } = useReactFlow();
     const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const focusThis = () => fitView({ nodes: [{ id }], duration: 600, padding: 0.5, maxZoom: 1.5 });
 
     const handleSave = (updated: Partial<OrchestratorData>) => {
         updateNodeData(id, updated);
@@ -61,13 +63,14 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
         <div className="relative">
             <div className={cn(
                 "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-2xl scale-90 flex items-center justify-center transition-all duration-400",
-                selected ? "bg-pink-300 blur-sm scale-100" : statusGlow[d.status],
+                selected && d.status === "idle" ? "bg-pink-300 blur-xs scale-100" : statusGlow[d.status],
             )} />
             <div
+                onClick={focusThis}
                 className={cn(
-                    "relative w-105 rounded-3xl border px-4 pt-3.75 pb-4 backdrop-blur-3xl z-10 transition-colors duration-1000",
+                    "relative w-105 rounded-3xl border px-4 pt-3.75 pb-4 backdrop-blur-3xl z-10 transition-colors duration-1000 cursor-pointer",
                     d.status !== "idle" && "transition-border duration-500",
-                    selected ? "border-pink-400 bg-[#1a1a1a]" : cn(statusBorder[d.status], "bg-[#1a1a1a]"),
+                    selected && d.status === "idle" ? "border-pink-400 bg-[#1a1a1a]" : cn(statusBorder[d.status], "bg-[#1a1a1a]"),
                 )}
             >
                 {/* 头部 */}
@@ -80,7 +83,7 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                     </div>
                     <button
                         onClick={(e) => {
-                            // e.stopPropagation();
+                            e.stopPropagation();
                             setDrawerOpen(true);
                         }}
                         className="flex items-center gap-1 px-3 py-1 rounded-md text-[11px] text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 transition-colors"
@@ -128,10 +131,10 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                             {d.subagents.map((a) => (
                                 <div
                                     key={a.nodeId}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
+                                    onClick={() => {
+                                        fitView({ nodes: [{ id: a.nodeId }], duration: 600, padding: 0.5 });
                                     }}
-                                    className="rounded flex items-center px-2 pt-1.25 pb-0.75 text-[11px] bg-neutral-800/40 border border-neutral-700/40 hover:border-neutral-600/60 transition-colors"
+                                    className="rounded flex items-center px-2 pt-1.25 pb-0.75 text-[11px] bg-neutral-800/40 border border-neutral-700/40 hover:border-neutral-600/60 transition-colors cursor-pointer"
                                 >
                                     <span className="text-neutral-200 font-medium">{a.name}</span>
                                     <ArrowRight className="w-3 h-3 text-neutral-600 mx-1.5 shrink-0" />
@@ -143,23 +146,25 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                 </div>
 
                 {/* Tools */}
-                {d.tools.length > 0 && (
-                    <div className="mb-3">
-                        <span className="block text-[11px] text-neutral-500 mb-1.5">
-                            Tools
-                        </span>
+                <div className="mb-3">
+                    <span className="block text-[11px] text-neutral-500 mb-1.5">
+                        Tools
+                    </span>
+                    {d.tools.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
                             {d.tools.map((t) => (
                                 <span
                                     key={t.name}
-                                    className="inline-block px-2 pt-0.5 pb-px rounded text-[11px] bg-neutral-800 text-neutral-300 border border-neutral-700"
+                                    className="inline-block px-2 pt-0.5 pb-px rounded-md text-[11px] bg-neutral-800 text-neutral-300 border border-neutral-700"
                                 >
                                     {t.name}
                                 </span>
                             ))}
                         </div>
-                    </div>
-                )}
+                    ) : (
+                        <div className="rounded-lg text-center px-2 py-1.5 text-[11px] text-neutral-600 border border-neutral-800">No tools configured</div>
+                    )}
+                </div>
 
                 {/* Skills */}
                 <div className="mb-3">
@@ -171,16 +176,14 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                             {d.skills.map((s) => (
                                 <span
                                     key={s.name}
-                                    className="inline-block px-2 pt-0.5 pb-px rounded text-[11px] bg-neutral-800 text-neutral-300 border border-neutral-700"
+                                    className="inline-block px-2 pt-0.5 pb-px rounded-md text-[11px] bg-neutral-800 text-neutral-300 border border-neutral-700"
                                 >
                                     {s.name}
                                 </span>
                             ))}
                         </div>
                     ) : (
-                        <div className="rounded-lg text-center px-2 py-1.5 text-[11px] text-neutral-600 border border-neutral-800">
-                            No skills loaded
-                        </div>
+                        <div className="rounded-lg text-center px-2 py-1.5 text-[11px] text-neutral-600 border border-neutral-800">No skills loaded</div>
                     )}
                 </div>
 

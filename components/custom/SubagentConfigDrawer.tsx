@@ -1,30 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import TextareaAutosize from "react-textarea-autosize";
 import { Drawer, DrawerHeader, DrawerBody, DrawerFooter } from "@/components/ui/drawer";
 import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from "@/components/ui/dropdown";
-import type { OrchestratorData, ToolRef, SkillRef } from "@/types/workflow";
-import { ChessQueen, X, Plus, Trash2, ChevronDown, Check } from "lucide-react";
+import type { SubagentData, ToolRef, SkillRef } from "@/types/workflow";
+import { ChessKnight, X, Plus, Trash2, ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MODELS, getModelLabel } from "@/lib/models";
 
 interface Props {
     open: boolean;
-    data: OrchestratorData;
+    data: SubagentData;
     onClose: () => void;
-    onSave: (updated: Partial<OrchestratorData>) => void;
+    onSave: (updated: Partial<SubagentData>) => void;
 }
 
-export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }: Props) {
+export default function SubagentConfigDrawer({ open, data, onClose, onSave }: Props) {
     const [model, setModel] = useState(data.model);
     const [temperature, setTemperature] = useState(data.temperature);
     const [maxTokens, setMaxTokens] = useState(data.maxTokens);
     const [reasoning, setReasoning] = useState(data.reasoning);
-    const [maxRounds, setMaxRounds] = useState(data.maxRounds);
     const [tools, setTools] = useState<ToolRef[]>(data.tools);
     const [skills, setSkills] = useState<SkillRef[]>(data.skills);
-    const [steering, setSteering] = useState(data.humanSteering ?? "");
 
     const [newToolName, setNewToolName] = useState("");
     const [newSkillName, setNewSkillName] = useState("");
@@ -36,10 +33,8 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
             setTemperature(data.temperature);
             setMaxTokens(data.maxTokens);
             setReasoning(data.reasoning);
-            setMaxRounds(data.maxRounds);
             setTools(data.tools);
             setSkills(data.skills);
-            setSteering(data.humanSteering ?? "");
         }
     }, [open, data]);
 
@@ -49,10 +44,8 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
             temperature,
             maxTokens,
             reasoning,
-            maxRounds,
             tools,
             skills,
-            humanSteering: steering || null,
         });
         onClose();
     };
@@ -78,7 +71,6 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
     };
 
     const currentModelLabel = getModelLabel(model);
-
     const currentModelIcon = MODELS.find((m) => m.id === model)?.icon;
     const ModelIcon = currentModelIcon;
 
@@ -86,9 +78,9 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
         <Drawer open={open} onOpenChange={(v) => { if (!v) onClose(); }} direction="right">
             <div className="flex flex-col h-full w-116">
                 <DrawerHeader>
-                    <div className="flex items-center pl-2.5 pr-4 pt-2.25 pb-1.5 my-3 ml-3 border border-neutral-800 rounded-xl gap-2 ">
-                        <ChessQueen className="w-4 h-4 text-pink-400 mb-1" />
-                        <span className="text-sm font-medium text-neutral-100">Orchestrator</span>
+                    <div className="flex items-center pl-2.5 pr-4 pt-2.25 pb-1.5 my-3 ml-3 border border-neutral-800 rounded-xl gap-2">
+                        <ChessKnight className="w-4 h-4 text-sky-300" />
+                        <span className="text-sm font-medium text-neutral-100">Subagent</span>
                     </div>
                     <button
                         onClick={onClose}
@@ -148,7 +140,7 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
                                     step="0.1"
                                     value={temperature}
                                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                                    className="flex-1 accent-pink-400"
+                                    className="flex-1 accent-sky-400"
                                 />
                                 <span className="text-sm font-mono text-neutral-300 w-8 text-right">{temperature.toFixed(1)}</span>
                             </div>
@@ -176,7 +168,7 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
                                 onClick={() => setReasoning((v) => !v)}
                                 className={cn(
                                     "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200",
-                                    reasoning ? "bg-pink-500" : "bg-neutral-700",
+                                    reasoning ? "bg-sky-400" : "bg-neutral-700",
                                 )}
                             >
                                 <span
@@ -187,19 +179,6 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
                                 />
                             </button>
                         </div>
-
-                        {/* ===== Max Rounds ===== */}
-                        <fieldset>
-                            <legend className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">Max Rounds</legend>
-                            <input
-                                type="number"
-                                min={1}
-                                max={20}
-                                value={maxRounds}
-                                onChange={(e) => setMaxRounds(parseInt(e.target.value) || 1)}
-                                className="w-full rounded-lg border border-neutral-700 bg-neutral-800/50 px-3 py-2 text-sm text-neutral-200 focus:border-neutral-500 focus:outline-none"
-                            />
-                        </fieldset>
 
                         {/* ===== Tools ===== */}
                         <fieldset>
@@ -270,19 +249,6 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
                                 </button>
                             </div>
                         </fieldset>
-
-                        {/* ===== Steering ===== */}
-                        <fieldset>
-                            <legend className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">Steering</legend>
-                            <TextareaAutosize
-                                value={steering}
-                                onChange={(e) => setSteering(e.target.value)}
-                                placeholder="Human steering gradient signal..."
-                                minRows={5}
-                                maxRows={9}
-                                className="w-full rounded-xl border border-neutral-700 bg-neutral-800/50 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none resize-none"
-                            />
-                        </fieldset>
                     </div>
                 </DrawerBody>
 
@@ -295,7 +261,7 @@ export default function OrchestratorConfigDrawer({ open, data, onClose, onSave }
                     </button>
                     <button
                         onClick={handleSave}
-                        className="flex-1 rounded-xl bg-pink-400/80 hover:bg-pink-400 px-4 py-2 text-sm font-medium text-white transition-colors"
+                        className="flex-1 rounded-xl bg-sky-400/80 hover:bg-sky-400 px-4 py-2 text-sm font-medium text-white transition-colors"
                     >
                         Save Changes
                     </button>
