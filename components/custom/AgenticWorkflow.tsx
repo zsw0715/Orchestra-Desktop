@@ -32,6 +32,9 @@ const initialNodes: Node[] = [
             systemPrompt: "你是一个任务协调者，负责将用户需求拆分为子任务并分派给领域 Agent。",
             model: "deepseek-v4-flash",
             model_icon: "deepseek",
+            temperature: 0.7,
+            maxTokens: 4096,
+            reasoning: false,
             maxRounds: 5,
             subagents: [
                 {

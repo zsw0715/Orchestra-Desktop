@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { WorkflowProvider } from "@/context/WorkflowContext";
+import { DrawerProvider } from "@/context/DrawerContext";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +37,9 @@ export default function RootLayout({
             <body className="h-full flex flex-col bg-[#1e1e1f]/45 p-1 overflow-hidden">
                 <WorkflowProvider>
                     <SidebarProvider>
-                        {children}
+                        <DrawerProvider>
+                            {children}
+                        </DrawerProvider>
                     </SidebarProvider>
                 </WorkflowProvider>
             </body>

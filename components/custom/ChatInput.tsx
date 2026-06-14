@@ -3,13 +3,8 @@
 import TextareaAutosize from "react-textarea-autosize";
 import { ArrowUp, Plus, ChevronDown, Check } from "lucide-react";
 import { useState, useRef, useCallback, memo, type KeyboardEvent } from "react";
-import { DeepSeek } from "@lobehub/icons";
 import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from "@/components/ui/dropdown";
-
-const MODELS = [
-    { id: "deepseek-v4-flash", label: "DeepSeek V4 Flash" },
-    { id: "deepseek-v4-pro", label: "DeepSeek V4 Pro" },
-] as const;
+import { MODELS, getModel } from "@/lib/models";
 
 interface ChatInputProps {
 }
@@ -37,12 +32,14 @@ export default memo(function ChatInput({  }: ChatInputProps) {
     }, [input, isGenerating]);
 
     const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
-        // 双重检查：原生 isComposing + 自定义 ref（兼容 Safari）
         if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && !isComposingRef.current) {
             e.preventDefault();
             setIsGenerating(true);
         }
     }, [isGenerating]);
+
+    const currentModel = getModel(model);
+    const ModelIcon = currentModel.icon;
 
     return (
         <>
@@ -65,8 +62,8 @@ export default memo(function ChatInput({  }: ChatInputProps) {
 
                 <Dropdown open={modelDropdownOpen} onOpenChange={setModelDropdownOpen} className="ml-auto">
                     <DropdownTrigger className="flex items-center gap-1 px-2 py-1 rounded-md text-xs text-[#b0b0b0] hover:bg-[#373737] hover:text-[#e6e2e3] transition-all duration-200">
-                        <DeepSeek className="w-4 h-4" />
-                        <span>{MODELS.find((m) => m.id === model)?.label}</span>
+                        <ModelIcon className="w-4 h-4" />
+                        <span>{currentModel.label}</span>
                         <ChevronDown className="w-3 h-3 opacity-60" />
                     </DropdownTrigger>
                     <DropdownContent
@@ -74,22 +71,25 @@ export default memo(function ChatInput({  }: ChatInputProps) {
                         activeIndex={MODELS.findIndex((m) => m.id === model)}
                         align="end"
                     >
-                        {MODELS.map((m) => (
-                            <DropdownItem
-                                key={m.id}
-                                onClick={() => {
-                                    setModel(m.id);
-                                    setModelDropdownOpen(false);
-                                }}
-                                className="flex items-center gap-2 px-3 py-2 text-xs text-[#e6e2e3] hover:bg-white/5 rounded-lg cursor-pointer focus:bg-white/10"
-                            >
-                                <DeepSeek className="w-4 h-4" />
-                                <span className="flex-1">{m.label}</span>
-                                {m.id === model && (
-                                    <Check className="w-3.5 h-3.5 text-[#e6e2e3]" />
-                                )}
-                            </DropdownItem>
-                        ))}
+                        {MODELS.map((m) => {
+                            const ItemIcon = m.icon;
+                            return (
+                                <DropdownItem
+                                    key={m.id}
+                                    onClick={() => {
+                                        setModel(m.id);
+                                        setModelDropdownOpen(false);
+                                    }}
+                                    className="flex items-center gap-2 px-3 py-2 text-xs text-[#e6e2e3] hover:bg-white/5 rounded-lg cursor-pointer focus:bg-white/10"
+                                >
+                                    <ItemIcon className="w-4 h-4" />
+                                    <span className="flex-1">{m.label}</span>
+                                    {m.id === model && (
+                                        <Check className="w-3.5 h-3.5 text-[#e6e2e3]" />
+                                    )}
+                                </DropdownItem>
+                            );
+                        })}
                     </DropdownContent>
                 </Dropdown>
 

@@ -29,6 +29,9 @@ export interface OrchestratorData extends Record<string, unknown> {
     systemPrompt: string;
     model: string;
     model_icon: string;
+    temperature: number;
+    maxTokens: number;
+    reasoning: boolean;
     maxRounds: number;
     subagents: SubagentRef[];
     tools: ToolRef[];               // 可调用工具
