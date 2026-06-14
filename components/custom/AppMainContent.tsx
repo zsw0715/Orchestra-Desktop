@@ -14,7 +14,7 @@ export default function AppMainContent() {
 
     return (
         <div
-            className="relative flex-1 flex rounded-[12.5px] bg-[#181818] border border-[#373737] z-10 transition-all duration-500 text-[#b0b0b0]" 
+            className="relative flex-1 flex rounded-[12.5px] bg-[#181818] border border-[#373737] z-10 transition-[margin] duration-300 ease-out text-[#b0b0b0]" 
             style={{ marginLeft: isSidebarOpen ? 2.5 : `-${sidebarWidth}px` }}
         >
             {/* 可拖动标题栏 */}
