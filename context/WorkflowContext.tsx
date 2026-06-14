@@ -20,6 +20,10 @@ import type {
 interface WorkflowContextType {
     state: WorkflowState;
 
+    /** 流水线是否正在运行 */
+    orchestrating: boolean;
+    toggleOrchestrating: () => void;
+
     /** 切换宏观阶段 */
     advancePhase: (phase: WorkflowPhase) => void;
 
@@ -66,6 +70,8 @@ const WorkflowContext = createContext<WorkflowContextType | undefined>(undefined
 // ============================================================
 export function WorkflowProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WorkflowState>(demoState);
+    const [orchestrating, setOrchestrating] = useState(false);
+    const toggleOrchestrating = useCallback(() => setOrchestrating((v) => !v), []);
 
     const advancePhase = useCallback((phase: WorkflowPhase) => {
         setState((prev) => ({ ...prev, currentPhase: phase }));
@@ -135,12 +141,14 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
     const value = useMemo(
         () => ({
             state,
+            orchestrating,
+            toggleOrchestrating,
             advancePhase,
             injectHumanSteering,
             updateAgentStatus,
             stepForward,
         }),
-        [state, advancePhase, injectHumanSteering, updateAgentStatus, stepForward],
+        [state, orchestrating, toggleOrchestrating, advancePhase, injectHumanSteering, updateAgentStatus, stepForward],
     );
 
     return (

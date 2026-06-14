@@ -215,7 +215,7 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                 <Handle
                     type="source"
                     position={Position.Bottom}
-                    className="w-7! h-1! rounded-3xl! border-pink-300! hover:border-pink-400! shadow-md! hover:w-20! hover:h-2! hover:rounded-sm! transition-[width,height,border-radius,border-color]! duration-300!"
+                    className="w-7! h-1! rounded-3xl! border-pink-200! hover:border-pink-400! shadow-md! hover:w-20! hover:h-2! hover:rounded-sm! transition-[width,height,border-radius,border-color]! duration-300!"
                 />
             </div>
 

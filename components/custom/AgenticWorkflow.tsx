@@ -13,13 +13,16 @@ import {
     type OnConnect,
     type Node,
     type Edge,
+    Panel,
 } from "@xyflow/react";
 import OrchestratorNode from "./Orchestrator";
 import Subagent from "./Subagent";
 import ExternalKB from "./ExternalKB";
-import type { OrchestratorData , SubagentData, KnowledgeBaseData } from "@/types/workflow";
+import type { OrchestratorData, SubagentData, KnowledgeBaseData } from "@/types/workflow";
 import { computeLayout } from "@/lib/layout";
 import { useSidebar } from "@/context/SidebarContext";
+import { useWorkflow } from "@/context/WorkflowContext";
+import { Maximize, Pause, Play, Square } from "lucide-react";
 
 const nodeTypes = {
     orchestrator: OrchestratorNode,
@@ -170,9 +173,10 @@ const initialEdges: Edge[] = [
 
 function FlowInner() {
     const { isSidebarOpen } = useSidebar();
+    const { orchestrating, toggleOrchestrating } = useWorkflow();
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const { fitView } = useReactFlow();
+    const { zoomIn, zoomOut, fitView } = useReactFlow();
 
     const onConnect: OnConnect = useCallback(
         (params) => {
@@ -218,6 +222,69 @@ function FlowInner() {
                 elevateNodesOnSelect={false}
                 proOptions={{ hideAttribution: true }}
             >
+                <Panel
+                    position="bottom-left"
+                    className="relative overflow-visible"
+                >
+                    <div
+                        className="flex flex-col items-center shadow-lg rounded-lg overflow-hidden bg-neutral-800/90 backdrop-blur-sm border border-b-0 border-neutral-700"
+                        style={{
+                            clipPath: 'polygon(0% 0%, 100% 0%, 100% 70%, 150% 100%, 0% 100%)',
+                            width: '2rem',
+                            paddingBottom: '2rem',
+                        }}
+                    >
+                        <button
+                            onClick={() => zoomIn({ duration: 500 })}
+                            className="w-8 h-8 flex items-center justify-center text-lg font-semibold hover:bg-neutral-700/80 text-neutral-300 transition-colors"
+                        >
+                            +
+                        </button>
+                        <button
+                              onClick={() => zoomOut({ duration: 500 })}
+                            className="w-8 h-8 flex items-center justify-center text-lg font-semibold hover:bg-neutral-700/80 text-neutral-300 transition-colors"
+                        >
+                            −
+                        </button>
+                        <button
+                            onClick={() => fitView({ duration: 500 })}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-neutral-700/80 text-neutral-300 transition-colors"
+                        >
+                            <Maximize className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                    <button
+                        onClick={() => {/* TODO: pause pipeline / add checkpoint */}}
+                        className="absolute bottom-0 border-t border-neutral-700 left-0 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/90 hover:bg-neutral-700/80 text-neutral-400 transition-colors rounded-bl-lg shadow-lg backdrop-blur-sm"
+                    >
+                        <Pause className="w-3.5 h-3.5 mr-1.5" /> Add Checkpoint
+                    </button>
+                    <button
+                        onClick={toggleOrchestrating}
+                        className={
+                            orchestrating
+                                ? "overflow-hidden absolute bottom-0 group left-40 border-t border-red-800 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/90 text-neutral-400 transition-colors rounded-lg rounded-tl-none rounded-bl-none shadow-lg backdrop-blur-sm active:shadow-inner"
+                                : "overflow-hidden absolute bottom-0 group left-40 border-t border-blue-800 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/90 text-neutral-400 transition-colors rounded-lg rounded-tl-none rounded-bl-none shadow-lg backdrop-blur-sm active:shadow-inner"
+                        }
+                    >
+                        <div className={
+                            orchestrating
+                                ? "absolute inset-0 w-full h-full transition-all duration-300 scale-x-0 group-hover:scale-x-100 group-hover:bg-linear-to-r from-red-500 via-red-600 to-red-700 origin-left"
+                                : "absolute inset-0 w-full h-full transition-all duration-300 scale-x-0 group-hover:scale-x-100 group-hover:bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 origin-left"
+                        } />
+                        {orchestrating ? (
+                            <>
+                                <Square className="z-10 w-3 h-3 mr-1.5 group-hover:animate-pulse" />
+                                <span className="z-10 group-hover:text-white group-hover:animate-pulse">Stop Orchestration</span>
+                            </>
+                        ) : (
+                            <>
+                                <Play className="z-10 w-3.5 h-3.5 mr-1.5 group-hover:animate-pulse" />
+                                <span className="z-10 group-hover:text-white group-hover:animate-pulse">Start Orchestration</span>
+                            </>
+                        )}
+                    </button>
+                </Panel>
                 <Background gap={26} size={1} />
             </ReactFlow>
         </div>
