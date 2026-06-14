@@ -1,0 +1,54 @@
+{
+    "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+    "productName": "orchestra_desktop",
+    "version": "0.1.0",
+    "identifier": "com.tauri.dev",
+    "build": {
+        "frontendDist": "../out",
+        "devUrl": "http://localhost:3000",
+        "beforeDevCommand": "pnpm dev",
+        "beforeBuildCommand": "pnpm build"
+    },
+    "app": {
+        "windows": [
+            {
+                "title": "",
+                "width": 1700,
+                "height": 1060,
+                "minWidth": 1700,
+                "minHeight": 1060,
+                "resizable": true,
+                "fullscreen": false,
+                "titleBarStyle": "Overlay",
+                "transparent": true,
+                "windowEffects": {
+                    "effects": [
+                        "hudWindow"
+                    ]
+                },
+                "trafficLightPosition": {
+                    "x": 16.0,
+                    "y": 26.0
+                }
+            }
+        ],
+        "macOSPrivateApi": true,
+        "security": {
+            "csp": null
+        }
+    },
+    "bundle": {
+        "active": true,
+        "targets": "all",
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ],
+        "android": {
+            "debugApplicationIdSuffix": ".debug"
+        }
+    }
+}
