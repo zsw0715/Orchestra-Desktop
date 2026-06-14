@@ -16,6 +16,14 @@ const statusBorder: Record<OrchestratorData["status"], string> = {
     error: "border-red-500 shadow-red-500/20",
 };
 
+const statusGlow: Record<OrchestratorData["status"], string> = {
+    idle: "",
+    thinking: "bg-blue-300 blur-sm animate-rotate",
+    waiting_human: "bg-amber-300 blur-sm animate-pulse",
+    done: "bg-emerald-300 blur-sm scale-100",
+    error: "bg-red-300 blur-sm animate-pulse",
+};
+
 const phaseLabel: Record<OrchestratorData["phase"], string> = {
     alignment: "Alignment",
     research: "Research",
@@ -50,25 +58,29 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
     };
 
     return (
-        <>
+        <div className="relative">
+            <div className={cn(
+                "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-2xl scale-90 flex items-center justify-center transition-all duration-400",
+                selected ? "bg-pink-300 blur-sm scale-100" : statusGlow[d.status],
+            )} />
             <div
                 className={cn(
-                    "relative w-105 rounded-3xl border px-4 pt-3.75 pb-4 bg-[#1a1a1a]",
-                    d.status !== "idle" && "transition-all duration-500",
-                    selected ? "border-neutral-400" : statusBorder[d.status],
+                    "relative w-105 rounded-3xl border px-4 pt-3.75 pb-4 backdrop-blur-3xl z-10 transition-colors duration-1000",
+                    d.status !== "idle" && "transition-border duration-500",
+                    selected ? "border-pink-400 bg-[#1a1a1a]" : cn(statusBorder[d.status], "bg-[#1a1a1a]"),
                 )}
             >
                 {/* 头部 */}
                 <div className="flex items-center justify-between mb-3 pb-2 border-b border-neutral-800">
                     <div className="flex items-center gap-2">
-                        <ChessQueen className="w-4 h-4 text-amber-400 shrink-0 mb-1" />
+                        <ChessQueen className="w-4 h-4 text-pink-400 shrink-0 mb-1" />
                         <span className="font-semibold text-sm text-neutral-100">
                             {d.label}
                         </span>
                     </div>
                     <button
                         onClick={(e) => {
-                            e.stopPropagation();
+                            // e.stopPropagation();
                             setDrawerOpen(true);
                         }}
                         className="flex items-center gap-1 px-3 py-1 rounded-md text-[11px] text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 transition-colors"
@@ -116,6 +128,9 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                             {d.subagents.map((a) => (
                                 <div
                                     key={a.nodeId}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                    }}
                                     className="rounded flex items-center px-2 pt-1.25 pb-0.75 text-[11px] bg-neutral-800/40 border border-neutral-700/40 hover:border-neutral-600/60 transition-colors"
                                 >
                                     <span className="text-neutral-200 font-medium">{a.name}</span>
@@ -156,7 +171,7 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                             {d.skills.map((s) => (
                                 <span
                                     key={s.name}
-                                    className="inline-block px-2 pt-0.5 pb-px rounded text-[11px] bg-violet-950/25 text-violet-300 border border-violet-500/20"
+                                    className="inline-block px-2 pt-0.5 pb-px rounded text-[11px] bg-neutral-800 text-neutral-300 border border-neutral-700"
                                 >
                                     {s.name}
                                 </span>
@@ -175,7 +190,7 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                         Steering
                     </span>
                     {d.humanSteering ? (
-                        <div className="rounded-lg px-2 py-1.5 text-[11px] bg-amber-950/30 text-amber-300 border border-amber-500/20">
+                        <div className="rounded-lg px-2 pt-1.5 pb-1 text-[11px] bg-neutral-800/50 text-neutral-300 border border-neutral-700">
                             {d.humanSteering.length > 48
                                 ? d.humanSteering.slice(0, 48) + "…"
                                 : d.humanSteering}
@@ -187,10 +202,17 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                     )}
                 </div>
 
+                {/* Left Handle - 连接个人数据库（以后做 RAG） */}
+                <Handle
+                    type="target"
+                    position={Position.Left}
+                    className="h-7! w-1! rounded-3xl! border-amber-200! hover:border-amber-400! shadow-md! hover:h-20! hover:w-2! hover:rounded-sm! transition-[width,height,border-radius,border-color]! duration-300!"
+                />
+                {/* Bottom Handle - 连接子subagent */}
                 <Handle
                     type="source"
                     position={Position.Bottom}
-                    className="w-7! h-1! rounded-3xl! hover:border-amber-400! shadow-md! hover:w-20! hover:h-2! hover:rounded-sm! transition-[width,height,border-radius,border-color]! duration-300!"
+                    className="w-7! h-1! rounded-3xl! border-pink-300! hover:border-pink-400! shadow-md! hover:w-20! hover:h-2! hover:rounded-sm! transition-[width,height,border-radius,border-color]! duration-300!"
                 />
             </div>
 
@@ -201,7 +223,7 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
                 onSave={handleSave}
             />
 
-        </>
+        </div>
     );
 };
 

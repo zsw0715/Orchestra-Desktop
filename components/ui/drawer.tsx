@@ -98,7 +98,7 @@ export function Drawer({ open, onOpenChange, children, direction }: DrawerProps)
                 role="dialog"
                 aria-modal="true"
                 className={cn(
-                    "fixed top-1.5 bottom-1.5 z-50 bg-[#121212]",
+                    "fixed top-1.5 bottom-1.5 z-50 bg-[#181818]",
                     isRight ? "right-1.5 border-l rounded-r-[11px] rounded-l-[24px]" : "left-1.5 border-r rounded-l-[11px] rounded-r-[11px]",
                     "border-neutral-800",
                 )}
@@ -140,7 +140,7 @@ export function DrawerBody({ children, className }: SectionProps) {
 
 export function DrawerFooter({ children, className }: SectionProps) {
     return (
-        <div className={cn("border-t border-neutral-800 px-5 py-3", className)}>
+        <div className={cn(" border-neutral-800 px-0 py-0", className)}>
             {children}
         </div>
     );
