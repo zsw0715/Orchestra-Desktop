@@ -13,7 +13,7 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [sidebarWidth, setSidebarWidth] = useState(465);
+    const [sidebarWidth, setSidebarWidth] = useState(480);
 
     const handleSetIsSidebarOpen = useCallback((open: boolean) => setIsSidebarOpen(open), []);
     const handleSetSidebarWidth = useCallback((width: number) => setSidebarWidth(width), []);
