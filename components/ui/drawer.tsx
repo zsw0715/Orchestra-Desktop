@@ -1,14 +1,12 @@
 "use client";
 
 import {
-    useContext,
     useEffect,
     useState,
     type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
-import { DrawerCtx } from "@/context/DrawerContext";
 
 /* ================================================================ */
 /*  Drawer                                                            */
@@ -26,13 +24,9 @@ export function Drawer({ open, onOpenChange, children, direction }: DrawerProps)
     const [show, setShow] = useState(false);
     const [animateIn, setAnimateIn] = useState(false);
 
-    const ctx = useContext(DrawerCtx);
-    const close = () => onOpenChange(false);
-
-    // 通知外部（AppMainContent 缩放用）
-    useEffect(() => {
-        ctx?.setOpen(open);
-    }, [open, ctx]);
+    const close = () => {
+        onOpenChange(false);
+    };
 
     // Esc 关闭
     useEffect(() => {

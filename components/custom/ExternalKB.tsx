@@ -4,7 +4,7 @@ import { memo, useCallback, useState, useRef, useEffect } from "react";
 import { Handle, Position, useReactFlow, type NodeProps } from "@xyflow/react";
 import { createPortal } from "react-dom";
 import type { KnowledgeBaseData } from "@/types/workflow";
-import { ChessRook, FolderOpen, Trash2, FolderSearch2 } from "lucide-react";
+import { ChessKing, FolderOpen, Trash2, FolderSearch2 } from "lucide-react";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readDir } from "@tauri-apps/plugin-fs";
@@ -91,12 +91,12 @@ const ExternalKBNode = ({ id, data, selected }: NodeProps) => {
                 onContextMenu={onContextMenu}
                 onClick={isEmpty ? handleSelectFolder : undefined}
                 className={cn(
-                    "relative rounded-3xl border backdrop-blur-3xl z-10 transition-colors duration-500",
+                    "relative rounded-3xl border backdrop-blur-3xl z-10 transition-all duration-200",
                     // 空状态：正方形
                     isEmpty
-                        ? "w-48 h-48 border-dashed border-neutral-600 bg-[#1a1a1a] cursor-pointer hover:border-amber-500/50"
+                        ? "w-48 h-48 border-dashed border-neutral-600 bg-[#1a1a1a] cursor-pointer hover:border-amber-500/50 hover:-translate-y-0.5"
                         : "w-88 border-neutral-700 bg-[#1a1a1a]",
-                    selected && "border-amber-400 bg-[#1a1a1a]",
+                    // selected && "border-amber-400 bg-[#1a1a1a]",    暂时去掉，此效果，但是注释保留
                     !isEmpty && !selected && "shadow-lg shadow-neutral-900/50",
                 )}
             >
@@ -104,7 +104,7 @@ const ExternalKBNode = ({ id, data, selected }: NodeProps) => {
                 {isEmpty ? (
                     <div className="flex flex-col items-center justify-center h-full gap-3 px-4">
                         <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                            <ChessRook className="w-5 h-5 text-amber-400" />
+                            <ChessKing className="w-5 h-5 text-amber-400" />
                         </div>
                         <div className="text-center">
                             <span className="block text-xs font-medium text-neutral-400">
@@ -122,7 +122,7 @@ const ExternalKBNode = ({ id, data, selected }: NodeProps) => {
                         </div>
                         {/* 头部 */}
                         <div className="flex items-center gap-2 ml- px-4 pt-3.5 pb-2.5 border-b border-neutral-800">
-                            <ChessRook className="w-4 h-4 text-amber-400 shrink-0" />
+                            <ChessKing className="w-4 h-4 text-amber-400 shrink-0" />
                             <span className="font-semibold text-sm text-neutral-100 truncate">
                                 {d.folderName || d.label}
                             </span>

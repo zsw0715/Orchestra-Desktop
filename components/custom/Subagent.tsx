@@ -1,12 +1,13 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { Handle, Position, useReactFlow, type NodeProps } from "@xyflow/react";
 import type { SubagentData } from "@/types/workflow";
 import { ChessKnight, Pencil } from "lucide-react";
 import { DeepSeek, Kimi, Zhipu, Qwen } from "@lobehub/icons";
 import { cn } from "@/lib/utils";
 import SubagentConfigDrawer from "./SubagentConfigDrawer";
+import { useDrawer } from "@/context/DrawerContext";
 
 /* ===== model icon map ===== */
 const modelIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -58,7 +59,13 @@ const arePropsEqual = (prev: NodeProps, next: NodeProps) => {
 const SubagentNode = ({ id, data, selected }: NodeProps) => {
     const d = data as unknown as SubagentData;
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const { setOpen: setDrawerCtx } = useDrawer();
     const { updateNodeData, fitView } = useReactFlow();
+
+    // 本地 drawer 状态 → 同步全局 DrawerContext（page.tsx scale 用）
+    useEffect(() => {
+        setDrawerCtx(drawerOpen);
+    }, [drawerOpen, setDrawerCtx]);
 
     const focusThis = () => fitView({ nodes: [{ id }], duration: 600, padding: 0.5, maxZoom: 1.5 });
 
@@ -90,7 +97,8 @@ const SubagentNode = ({ id, data, selected }: NodeProps) => {
                     </div>
                     <div className="flex items-center gap-0.5">
                     <button
-                        onClick={() => {                            
+                        onClick={(e) => {
+                            e.stopPropagation();
                             setDrawerOpen(true);
                         }}
                         className="flex items-center gap-1 px-3 py-1 rounded-md text-[11px] text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 transition-colors"

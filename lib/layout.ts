@@ -28,13 +28,13 @@ const ORCH_X = 500;
 const ORCH_Y = 100;
 const ORCH_HALF_WIDTH = 210; // Orchestrator w-105 ≈ 420px / 2
 
-const KB_WIDTH_EMPTY = 192;  // ExternalKB empty  w-48
+// const KB_WIDTH_EMPTY = 192;  // ExternalKB empty  w-48
 const KB_WIDTH_FILLED = 352; // ExternalKB loaded  w-88
-const KB_GAP_EMPTY = 100;    // KB(empty)  → Orchestrator
+// const KB_GAP_EMPTY = 100;    // KB(empty)  → Orchestrator
 const KB_GAP_FILLED = 80;    // KB(loaded) → Orchestrator
 
 const SUB_WIDTH = 320; // Subagent w-75 ≈ 300px + 预留间距
-const SUB_GAP = 80;
+const SUB_GAP = 88;
 const SUB_Y_OFFSET = 560;
 
 /** 计算 Orchester 下方 N 个 Subagent 的居中水平排布坐标 */

@@ -1,12 +1,13 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { Handle, Position, useReactFlow, type NodeProps } from "@xyflow/react";
 import type { OrchestratorData } from "@/types/workflow";
 import { ChessQueen, ArrowRight, Pencil } from "lucide-react";
 import { DeepSeek } from "@lobehub/icons";
 import { cn } from "@/lib/utils";
 import OrchestratorConfigDrawer from "./OrchestratorConfigDrawer";
+import { useDrawer } from "@/context/DrawerContext";
 
 const statusBorder: Record<OrchestratorData["status"], string> = {
     idle: "border-neutral-700",
@@ -52,6 +53,12 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
     const d = data as unknown as OrchestratorData;
     const { updateNodeData, fitView } = useReactFlow();
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const { setOpen: setDrawerCtx } = useDrawer();
+
+    // 本地 drawer 状态 → 同步全局 DrawerContext（page.tsx scale 用）
+    useEffect(() => {
+        setDrawerCtx(drawerOpen);
+    }, [drawerOpen, setDrawerCtx]);
 
     const focusThis = () => fitView({ nodes: [{ id }], duration: 600, padding: 0.5, maxZoom: 1.5 });
 
