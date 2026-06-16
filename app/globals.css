@@ -8,6 +8,17 @@
   will-change: transform;
 }
 
+/* 覆盖 group 节点默认背景色 */
+.react-flow__node-group {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.react-flow__node-group.selectable:hover {
+  box-shadow: none !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

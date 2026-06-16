@@ -19,6 +19,7 @@ import OrchestratorNode from "./Orchestrator";
 import Subagent from "./Subagent";
 import ExternalKB from "./ExternalKB";
 import TaskResearch from "./TaskResearch";
+import ResearchGroup from "./ResearchGroup";
 import type { OrchestratorData, SubagentData, KnowledgeBaseData, ResearchData } from "@/types/workflow";
 import { computeLayout } from "@/lib/layout";
 import { useSidebar } from "@/context/SidebarContext";
@@ -30,6 +31,7 @@ const nodeTypes = {
     subagent: Subagent,
     knowledgeBase: ExternalKB,
     taskResearch: TaskResearch,
+    group: ResearchGroup,
 };
 
 // MOCK DATA
@@ -165,11 +167,20 @@ const initialNodes: Node[] = [
             skills: [],
         } satisfies SubagentData,
     },
+    // ===== Research Group (sub-flow container) =====
+    {
+        id: "research-group",
+        type: "group",
+        position: { x: layout.researchGroup.x, y: layout.researchGroup.y },
+        style: { width: layout.researchGroup.width, height: layout.researchGroup.height },
+        data: { label: "Research" },
+    },
     // ===== Research 节点 =====
     {
         id: "research-lodging",
         type: "taskResearch",
         position: layout.research[0],
+        parentId: "research-group",
         data: {
             label: "住宿调研",
             status: "idle",
@@ -187,6 +198,7 @@ const initialNodes: Node[] = [
         id: "research-food",
         type: "taskResearch",
         position: layout.research[1],
+        parentId: "research-group",
         data: {
             label: "美食调研",
             status: "idle",
@@ -201,6 +213,7 @@ const initialNodes: Node[] = [
         id: "research-sights",
         type: "taskResearch",
         position: layout.research[2],
+        parentId: "research-group",
         data: {
             label: "景点调研",
             status: "idle",

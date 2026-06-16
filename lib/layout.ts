@@ -18,11 +18,19 @@ export interface SubLayout {
     y: number;
 }
 
+export interface GroupLayout {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 interface ComputeLayoutResult {
     knowledgeBase: OrchLayout;
     orchestrator: OrchLayout;
     subagents: SubLayout[];
     research: SubLayout[];
+    researchGroup: GroupLayout;
 }
 
 const ORCH_X = 500;
@@ -39,8 +47,15 @@ const SUB_GAP = 88;
 const SUB_Y_OFFSET = 560;
 
 const TASK_R_W = 256;  // TaskResearch w-64
+const TASK_R_H = 192;  // TaskResearch h-48
 const TASK_R_GAP = 48; // Sub 底部 → Research 顶部间距
 const SUB_ACTUAL_W = 300; // Subagent 实际宽 w-75
+
+// Research Group 内边距
+const RG_LABEL_H = 28;  // 标签区高度
+const RG_PAD_X = 16;
+const RG_PAD_TOP = 4;   // 标签区上方
+const RG_PAD_BOT = 6;
 
 /** 计算 Orchester 下方 N 个 Subagent 的居中水平排布坐标 */
 export function computeLayout(subCount: number): ComputeLayoutResult {
@@ -55,9 +70,21 @@ export function computeLayout(subCount: number): ComputeLayoutResult {
         y: subY,
     }));
 
-    const research: SubLayout[] = Array.from({ length: subCount }, (_, i) => ({
-        x: startX + i * (SUB_WIDTH + SUB_GAP) + (SUB_ACTUAL_W - TASK_R_W) / 2,
-        y: researchY,
+    const researchXs = Array.from({ length: subCount }, (_, i) =>
+        startX + i * (SUB_WIDTH + SUB_GAP) + (SUB_ACTUAL_W - TASK_R_W) / 2,
+    );
+
+    const firstRX = researchXs[0];
+    const lastRX = researchXs[subCount - 1];
+    const groupWidth = lastRX - firstRX + TASK_R_W + RG_PAD_X * 2;
+    const groupHeight = RG_LABEL_H + RG_PAD_TOP + TASK_R_H + RG_PAD_BOT;
+
+    const groupX = firstRX - RG_PAD_X;
+    const groupY = researchY - RG_LABEL_H - RG_PAD_TOP;
+
+    const research: SubLayout[] = researchXs.map((rx) => ({
+        x: rx - groupX,
+        y: RG_LABEL_H + RG_PAD_TOP,
     }));
 
     return {
@@ -65,6 +92,7 @@ export function computeLayout(subCount: number): ComputeLayoutResult {
         orchestrator: { x: ORCH_X, y: ORCH_Y },
         subagents,
         research,
+        researchGroup: { x: groupX, y: groupY, width: groupWidth, height: groupHeight },
     };
 }
 
