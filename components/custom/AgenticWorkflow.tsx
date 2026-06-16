@@ -269,8 +269,8 @@ function FlowInner() {
                     >
                         <div className={
                             orchestrating
-                                ? "absolute inset-0 w-full h-full transition-all duration-300 scale-x-0 group-hover:scale-x-100 group-hover:bg-linear-to-r from-red-500 via-red-600 to-red-700 origin-left"
-                                : "absolute inset-0 w-full h-full transition-all duration-300 scale-x-0 group-hover:scale-x-100 group-hover:bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 origin-left"
+                                ? "absolute inset-0 w-full h-full transition-all duration-300 scale-x-0 group-hover:scale-x-100 group-hover:bg-linear-to-r from-red-500 via-red-600 to-red-700 origin-left bg-red-500/90"
+                                : "absolute inset-0 w-full h-full transition-all duration-300 scale-x-0 group-hover:scale-x-100 group-hover:bg-linear-to-r from-blue-500 via-blue-600 to-blue-700 origin-left bg-blue-500/90"
                         } />
                         {orchestrating ? (
                             <>
