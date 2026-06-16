@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { WorkflowProvider } from "@/context/WorkflowContext";
 import { DrawerProvider } from "@/context/DrawerContext";
+import { DialogProvider } from "@/context/DialogContext";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +39,9 @@ export default function RootLayout({
                 <WorkflowProvider>
                     <SidebarProvider>
                         <DrawerProvider>
+                            <DialogProvider>
                             {children}
+                            </DialogProvider>
                         </DrawerProvider>
                     </SidebarProvider>
                 </WorkflowProvider>

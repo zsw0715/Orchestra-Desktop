@@ -9,6 +9,7 @@ import { FileIcon, defaultStyles } from "react-file-icon";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readDir } from "@tauri-apps/plugin-fs";
 import { cn } from "@/lib/utils";
+import ExternalKBConfigDialog from "./ExternalKBConfigDialog";
 
 /* ===== recursive dir reader ===== */
 async function collectFiles(dirPath: string, prefix = ""): Promise<string[]> {
@@ -34,6 +35,7 @@ const ExternalKBNode = ({ id, data, selected }: NodeProps) => {
     const d = data as unknown as KnowledgeBaseData;
     const { updateNodeData } = useReactFlow();
     const isEmpty = d.documentCount === 0;
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleSelectFolder = useCallback(async () => {
         try {
@@ -129,8 +131,7 @@ const ExternalKBNode = ({ id, data, selected }: NodeProps) => {
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    // 打开 dialog
-                                    // TODO
+                                    setDialogOpen(true);
                                 }}
                                 className="flex ml-auto items-center gap-1 px-2 py-0.5 rounded-md text-[11px] text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 transition-colors cursor-pointer"
                             >
@@ -205,6 +206,11 @@ const ExternalKBNode = ({ id, data, selected }: NodeProps) => {
                 </div>,
                 document.body
             )}
+            <ExternalKBConfigDialog
+                open={dialogOpen}
+                data={d}
+                onClose={() => setDialogOpen(false)}
+            />
         </div>
     );
 };
