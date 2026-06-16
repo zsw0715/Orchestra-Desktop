@@ -67,7 +67,7 @@ const SubagentNode = ({ id, data, selected }: NodeProps) => {
         setDrawerCtx(drawerOpen);
     }, [drawerOpen, setDrawerCtx]);
 
-    const focusThis = () => fitView({ nodes: [{ id }], duration: 600, padding: 0.5, maxZoom: 1.5 });
+    const focusThis = () => fitView({ nodes: [{ id }], duration: 600, padding: 3, maxZoom: 1.5 });
 
     const ModelIcon = modelIcons[d.model_icon] ?? null;
 
@@ -177,7 +177,7 @@ const SubagentNode = ({ id, data, selected }: NodeProps) => {
                 <Handle
                     type="target"
                     position={Position.Top}
-                    className="w-7! h-1! rounded-3xl! border-pink-200! hover:border-pink-400! shadow-md! hover:w-20! hover:h-2! hover:rounded-sm! transition-[width,height,border-radius,border-color]! duration-300!"
+                    className="w-7! h-1! rounded-3xl! border-sky-200! hover:border-sky-400! shadow-md! hover:w-20! hover:h-2! hover:rounded-sm! transition-[width,height,border-radius,border-color]! duration-300!"
                 />
                 <Handle
                     type="source"

@@ -60,7 +60,7 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
         setDrawerCtx(drawerOpen);
     }, [drawerOpen, setDrawerCtx]);
 
-    const focusThis = () => fitView({ nodes: [{ id }], duration: 600, padding: 0.5, maxZoom: 1.5 });
+    const focusThis = () => fitView({ nodes: [{ id }], duration: 600, padding: 1.25, maxZoom: 1.5 });
 
     const handleSave = (updated: Partial<OrchestratorData>) => {
         updateNodeData(id, updated);

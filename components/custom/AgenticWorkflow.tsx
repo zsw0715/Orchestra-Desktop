@@ -18,7 +18,8 @@ import {
 import OrchestratorNode from "./Orchestrator";
 import Subagent from "./Subagent";
 import ExternalKB from "./ExternalKB";
-import type { OrchestratorData, SubagentData, KnowledgeBaseData } from "@/types/workflow";
+import TaskResearch from "./TaskResearch";
+import type { OrchestratorData, SubagentData, KnowledgeBaseData, ResearchData } from "@/types/workflow";
 import { computeLayout } from "@/lib/layout";
 import { useSidebar } from "@/context/SidebarContext";
 import { useWorkflow } from "@/context/WorkflowContext";
@@ -28,6 +29,7 @@ const nodeTypes = {
     orchestrator: OrchestratorNode,
     subagent: Subagent,
     knowledgeBase: ExternalKB,
+    taskResearch: TaskResearch,
 };
 
 // MOCK DATA
@@ -163,12 +165,58 @@ const initialNodes: Node[] = [
             skills: [],
         } satisfies SubagentData,
     },
+    // ===== Research 节点 =====
+    {
+        id: "research-lodging",
+        type: "taskResearch",
+        position: layout.research[0],
+        data: {
+            label: "住宿调研",
+            status: "idle",
+            subagentId: "subagent-lodging",
+            findings: [
+                "解放碑附近酒店性价比高，步行可达洪崖洞",
+                "南岸区民宿视野好，但交通不太方便",
+                "观音桥商圈周边有多个4星酒店",
+                "朝天门区域江景房旺季价格翻倍",
+                "南滨路公寓安静但有上下坡",
+            ],
+        } satisfies ResearchData,
+    },
+    {
+        id: "research-food",
+        type: "taskResearch",
+        position: layout.research[1],
+        data: {
+            label: "美食调研",
+            status: "idle",
+            subagentId: "subagent-food",
+            findings: [
+                "解放碑好吃街必吃酸辣粉和陈麻花",
+                "观音桥九街是夜宵和新派川菜聚集地",
+            ],
+        } satisfies ResearchData,
+    },
+    {
+        id: "research-sights",
+        type: "taskResearch",
+        position: layout.research[2],
+        data: {
+            label: "景点调研",
+            status: "idle",
+            subagentId: "subagent-sights",
+            findings: [],
+        } satisfies ResearchData,
+    },
 ];
 
 const initialEdges: Edge[] = [
-    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", animated: true, style: { stroke: "#fbcfe8" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
-    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", animated: true, style: { stroke: "#fbcfe8" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
-    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", animated: true, style: { stroke: "#fbcfe8" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#525252", width: 30, height: 30 } },
+    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
+    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
+    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
+    { id: "e-sub-r-lodging", source: "subagent-lodging", target: "research-lodging", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-sub-r-food", source: "subagent-food", target: "research-food", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-sub-r-sights", source: "subagent-sights", target: "research-sights", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
 ];
 
 function FlowInner() {
@@ -185,9 +233,9 @@ function FlowInner() {
             setEdges((es) => addEdge({
                 ...params,
                 animated: true,
-                style: { stroke: isKBtoOrch ? "#d97706" : "#525252" },
+                style: { stroke: isKBtoOrch ? "#d97706" : "#737373" },
                 ...(isKBtoOrch ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#d97706", width: 40, height: 40 } } : {}),
-                ...(isOrchtoSubagent ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#fbcfe8", width: 30, height: 30 } } : {}),
+                ...(isOrchtoSubagent ? { markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } } : {}),
             }, es));
         },
         [setEdges],
@@ -227,7 +275,7 @@ function FlowInner() {
                     className="relative overflow-visible"
                 >
                     <div
-                        className="flex flex-col items-center shadow-lg rounded-lg overflow-hidden bg-neutral-800/90 backdrop-blur-sm border border-b-0 border-neutral-700"
+                        className="flex flex-col items-center shadow-lg rounded-lg overflow-hidden bg-neutral-800/60 backdrop-blur-sm border border-b-0 border-neutral-700"
                         style={{
                             clipPath: 'polygon(0% 0%, 100% 0%, 100% 70%, 150% 100%, 0% 100%)',
                             width: '2rem',
@@ -255,7 +303,7 @@ function FlowInner() {
                     </div>
                     <button
                         onClick={() => {/* TODO: pause pipeline / add checkpoint */}}
-                        className="absolute bottom-0 border-t border-neutral-700 left-0 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/90 hover:bg-neutral-700/80 text-neutral-400 transition-colors rounded-bl-lg shadow-lg backdrop-blur-sm"
+                        className="absolute bottom-0 border-t border-neutral-800/60 backdrop-blur-xs left-0 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/60 hover:bg-neutral-700/80 text-neutral-400 transition-colors rounded-bl-lg shadow-lg"
                     >
                         <Pause className="w-3.5 h-3.5 mr-1.5" /> Add Checkpoint
                     </button>
@@ -263,8 +311,8 @@ function FlowInner() {
                         onClick={toggleOrchestrating}
                         className={
                             orchestrating
-                                ? "overflow-hidden absolute bottom-0 group left-40 border-t border-red-800 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/90 text-neutral-400 transition-colors rounded-lg rounded-tl-none rounded-bl-none shadow-lg backdrop-blur-sm active:shadow-inner"
-                                : "overflow-hidden absolute bottom-0 group left-40 border-t border-blue-800 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/90 text-neutral-400 transition-colors rounded-lg rounded-tl-none rounded-bl-none shadow-lg backdrop-blur-sm active:shadow-inner"
+                                ? "overflow-hidden absolute bottom-0 group left-40 border-t border-red-800 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/60 text-neutral-400 transition-colors rounded-lg rounded-tl-none rounded-bl-none shadow-lg backdrop-blur-xs active:shadow-inner"
+                                : "overflow-hidden absolute bottom-0 group left-40 border-t border-blue-800 w-40 h-8 flex items-center justify-center text-xs font-medium bg-neutral-800/60 text-neutral-400 transition-colors rounded-lg rounded-tl-none rounded-bl-none shadow-lg backdrop-blur-xs active:shadow-inner"
                         }
                     >
                         <div className={

@@ -22,6 +22,7 @@ interface ComputeLayoutResult {
     knowledgeBase: OrchLayout;
     orchestrator: OrchLayout;
     subagents: SubLayout[];
+    research: SubLayout[];
 }
 
 const ORCH_X = 500;
@@ -37,20 +38,33 @@ const SUB_WIDTH = 320; // Subagent w-75 ≈ 300px + 预留间距
 const SUB_GAP = 88;
 const SUB_Y_OFFSET = 560;
 
+const TASK_R_W = 256;  // TaskResearch w-64
+const TASK_R_GAP = 48; // Sub 底部 → Research 顶部间距
+const SUB_ACTUAL_W = 300; // Subagent 实际宽 w-75
+
 /** 计算 Orchester 下方 N 个 Subagent 的居中水平排布坐标 */
 export function computeLayout(subCount: number): ComputeLayoutResult {
     const totalWidth = subCount * SUB_WIDTH + (subCount - 1) * SUB_GAP;
     const startX = ORCH_X + ORCH_HALF_WIDTH - totalWidth / 2;
 
+    const subY = ORCH_Y + SUB_Y_OFFSET;
+    const researchY = subY + 320 + TASK_R_GAP; // 320 = Subagent h-80
+
     const subagents: SubLayout[] = Array.from({ length: subCount }, (_, i) => ({
         x: startX + i * (SUB_WIDTH + SUB_GAP),
-        y: ORCH_Y + SUB_Y_OFFSET,
+        y: subY,
+    }));
+
+    const research: SubLayout[] = Array.from({ length: subCount }, (_, i) => ({
+        x: startX + i * (SUB_WIDTH + SUB_GAP) + (SUB_ACTUAL_W - TASK_R_W) / 2,
+        y: researchY,
     }));
 
     return {
         knowledgeBase: { x: ORCH_X - KB_WIDTH_FILLED - KB_GAP_FILLED, y: ORCH_Y },
         orchestrator: { x: ORCH_X, y: ORCH_Y },
         subagents,
+        research,
     };
 }
 
@@ -101,7 +115,7 @@ export function computeResearchGroupLayout(
 
     const research = researchIds.map((id, i) => ({
         id,
-        x: GROUP_PADDING_X + i * (SUB_WIDTH + SUB_GAP) + 20, // 稍微居中
+        x: GROUP_PADDING_X + i * (SUB_WIDTH + SUB_GAP) + (SUB_ACTUAL_W - 192) / 2, // Research node 居中
         y: GROUP_PADDING_TOP + SUB_H + V_GAP,
     }));
 
