@@ -6,6 +6,8 @@ import Link from "next/link";
 export default function Studio() {
     return (
         <div className="flex-1 overflow-hidden rounded-[12.5px] bg-[#181818]">
+            {/* 可拖动标题栏 */}
+            <div className={`absolute top-0 left-0 w-full h-8 cursor-grabbing`} data-tauri-drag-region />
             <div className="flex flex-row h-[calc(100vh-7.5px)] transition-transform duration-500 ease-out">
                 {/* left side */}
                 <div className="w-64 h-full mt-12 flex flex-col px-3 gap-5 overflow-y-auto">

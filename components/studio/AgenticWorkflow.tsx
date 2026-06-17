@@ -26,7 +26,15 @@ import TaskWriting from "./TaskWriting";
 import GroupWriting from "./GroupWriting";
 import TaskOutput from "./TaskOutput";
 import DeveloperPanel from "./DeveloperPanel";
-import type { OrchestratorData, SubagentData, KnowledgeBaseData, ResearchData, PlanData, WriteData, OutputData } from "@/types/workflow";
+import type { 
+    OrchestratorData, 
+    SubagentData, 
+    KnowledgeBaseData, 
+    ResearchData, 
+    PlanData, 
+    WriteData, 
+    OutputData 
+} from "@/types/workflow";
 import { computeLayout } from "@/lib/layout";
 import { useSidebar } from "@/context/SidebarContext";
 import { useWorkflow } from "@/context/WorkflowContext";
