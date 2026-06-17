@@ -24,12 +24,14 @@ export default function Home() {
                 }}
             >
                 {!isSidebarOpen && (
-                    <div
-                        className="absolute z-20 top-2 left-22 p-1.25 rounded-md hover:bg-white/10 cursor-pointer transition-all duration-500"
-                        onClick={() => setIsSidebarOpen(true)}
-                    >
-                        <PanelLeftOpen className="w-4 h-4 text-[#b0b0b0]" />
-                    </div>
+                    <>
+                        <div
+                            className="absolute z-20 top-2 left-22 p-1.25 rounded-md hover:bg-white/10 cursor-pointer transition-all duration-500"
+                            onClick={() => setIsSidebarOpen(true)}
+                        >
+                            <PanelLeftOpen className="w-4 h-4 text-[#b0b0b0]" />
+                        </div>
+                    </>
                 )}
                 <AppSidebar />
                 <AppMainContent />

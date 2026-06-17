@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import {
     ReactFlow,
     ReactFlowProvider,
@@ -54,6 +54,7 @@ const initialNodes: Node[] = [
         type: "knowledgeBase",
         position: layout.knowledgeBase,
         data: {
+            step: 0,
             label: "Knowledge Base",
             status: "idle",
             source: "RAG / 个人数据库",
@@ -67,6 +68,7 @@ const initialNodes: Node[] = [
         type: "orchestrator",
         position: layout.orchestrator,
         data: {
+            step: 0,
             label: "Orchestrator",
             phase: "alignment",
             status: "idle",
@@ -114,6 +116,7 @@ const initialNodes: Node[] = [
         type: "subagent",
         position: layout.subagents[0],
         data: {
+            step: 1,
             label: "住宿 Subagent",
             role: "住宿调研专员",
             description: "调研和推荐住宿方案",
@@ -138,6 +141,7 @@ const initialNodes: Node[] = [
         type: "subagent",
         position: layout.subagents[1],
         data: {
+            step: 1,
             label: "美食 Subagent",
             role: "美食调研专员",
             description: "调研和推荐当地美食",
@@ -161,6 +165,7 @@ const initialNodes: Node[] = [
         type: "subagent",
         position: layout.subagents[2],
         data: {
+            step: 1,
             label: "景点 Subagent",
             role: "景点调研专员",
             description: "调研和规划景点路线",
@@ -184,7 +189,7 @@ const initialNodes: Node[] = [
         type: "researchGroup",
         position: { x: layout.researchGroup.x, y: layout.researchGroup.y },
         style: { width: layout.researchGroup.width, height: layout.researchGroup.height },
-        data: { label: "Research" },
+        data: { step: 2, label: "Research" },
     },
     // ===== Research 节点 =====
     {
@@ -193,6 +198,7 @@ const initialNodes: Node[] = [
         position: layout.research[0],
         parentId: "research-group",
         data: {
+            step: 2,
             label: "住宿调研",
             status: "idle",
             subagentId: "subagent-lodging",
@@ -211,6 +217,7 @@ const initialNodes: Node[] = [
         position: layout.research[1],
         parentId: "research-group",
         data: {
+            step: 2,
             label: "美食调研",
             status: "idle",
             subagentId: "subagent-food",
@@ -226,6 +233,7 @@ const initialNodes: Node[] = [
         position: layout.research[2],
         parentId: "research-group",
         data: {
+            step: 2,
             label: "景点调研",
             status: "idle",
             subagentId: "subagent-sights",
@@ -238,7 +246,7 @@ const initialNodes: Node[] = [
         type: "planningGroup",
         position: { x: layout.planningGroup.x, y: layout.planningGroup.y },
         style: { width: layout.planningGroup.width, height: layout.planningGroup.height },
-        data: { label: "Plan" },
+        data: { step: 3, label: "Plan" },
     },
     {
         id: "planning-1",
@@ -246,6 +254,7 @@ const initialNodes: Node[] = [
         position: layout.planning,
         parentId: "plan-group",
         data: {
+            step: 3,
             label: "群聊协调",
             status: "idle",
             summary: "美食优先，住宿统一调整至观音桥商圈，景点以美食路线串联",
@@ -262,7 +271,7 @@ const initialNodes: Node[] = [
         type: "writingGroup",
         position: { x: layout.writingGroup.x, y: layout.writingGroup.y },
         style: { width: layout.writingGroup.width, height: layout.writingGroup.height },
-        data: { label: "Write" },
+        data: { step: 4, label: "Write" },
     },
     {
         id: "write-lodging",
@@ -270,6 +279,7 @@ const initialNodes: Node[] = [
         position: layout.writing[0],
         parentId: "write-group",
         data: {
+            step: 4,
             label: "住宿 Section",
             status: "idle",
             subagentId: "subagent-lodging",
@@ -282,6 +292,7 @@ const initialNodes: Node[] = [
         position: layout.writing[1],
         parentId: "write-group",
         data: {
+            step: 4,
             label: "美食 Section",
             status: "idle",
             subagentId: "subagent-food",
@@ -294,6 +305,7 @@ const initialNodes: Node[] = [
         position: layout.writing[2],
         parentId: "write-group",
         data: {
+            step: 4,
             label: "景点 Section",
             status: "idle",
             subagentId: "subagent-sights",
@@ -306,6 +318,7 @@ const initialNodes: Node[] = [
         type: "taskOutput",
         position: layout.taskOutput,
         data: {
+            step: 5,
             label: "最终产出",
             status: "idle",
             content: "五一重庆3日游攻略：Day1抵达观音桥入住→九街夜宵；Day2解放碑好吃街→洪崖洞→长江索道；Day3磁器口古镇→南山一棵树→返程。全程以美食串联动线，住宿观音桥希尔顿/智选假日，预算400-600/晚。必吃：酸辣粉、陈麻花、晓彭肥肠鸡。",
@@ -315,29 +328,69 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
-    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
-    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
-    { id: "e-sub-r-lodging", source: "subagent-lodging", target: "research-lodging", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-sub-r-food", source: "subagent-food", target: "research-food", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-sub-r-sights", source: "subagent-sights", target: "research-sights", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-r-lodging-p", source: "research-lodging", target: "planning-1", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-r-food-p", source: "research-food", target: "planning-1", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-r-sights-p", source: "research-sights", target: "planning-1", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-p-w-lodging", source: "planning-1", target: "write-lodging", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-p-w-food", source: "planning-1", target: "write-food", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-p-w-sights", source: "planning-1", target: "write-sights", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-w-lodging-f", source: "write-lodging", target: "final-output", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-w-food-f", source: "write-food", target: "final-output", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
-    { id: "e-w-sights-f", source: "write-sights", target: "final-output", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-kb-o", source: "knowledge-base", target: "orchestrator-1", data: { step: 0 }, animated: true, style: { stroke: "#d97706" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#d97706", width: 40, height: 40 } },
+    { id: "e-o-lodging", source: "orchestrator-1", target: "subagent-lodging", data: { step: 1 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
+    { id: "e-o-food", source: "orchestrator-1", target: "subagent-food", data: { step: 1 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
+    { id: "e-o-sights", source: "orchestrator-1", target: "subagent-sights", data: { step: 1 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 30, height: 30 } },
+    { id: "e-sub-r-lodging", source: "subagent-lodging", target: "research-lodging", data: { step: 2 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-sub-r-food", source: "subagent-food", target: "research-food", data: { step: 2 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-sub-r-sights", source: "subagent-sights", target: "research-sights", data: { step: 2 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-r-lodging-p", source: "research-lodging", target: "planning-1", data: { step: 3 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-r-food-p", source: "research-food", target: "planning-1", data: { step: 3 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-r-sights-p", source: "research-sights", target: "planning-1", data: { step: 3 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-p-w-lodging", source: "planning-1", target: "write-lodging", data: { step: 4 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-p-w-food", source: "planning-1", target: "write-food", data: { step: 4 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-p-w-sights", source: "planning-1", target: "write-sights", data: { step: 4 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-w-lodging-f", source: "write-lodging", target: "final-output", data: { step: 5 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-w-food-f", source: "write-food", target: "final-output", data: { step: 5 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-w-sights-f", source: "write-sights", target: "final-output", data: { step: 5 }, animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
 ];
 
 function FlowInner() {
     const { isSidebarOpen } = useSidebar();
-    const { orchestrating, toggleOrchestrating } = useWorkflow();
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const { orchestrating, toggleOrchestrating, buildStep } = useWorkflow();
+
+    const visibleNodes = useMemo(
+        () => initialNodes.filter((n) => (n.data.step as number ?? 99) <= buildStep),
+        [buildStep],
+    );
+    const visibleEdges = useMemo(
+        () => initialEdges.filter((e) => (e.data?.step as number ?? 99) <= buildStep),
+        [buildStep],
+    );
+
+    const [nodes, setNodes, onNodesChange] = useNodesState(visibleNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(visibleEdges);
     const { zoomIn, zoomOut, fitView } = useReactFlow();
+
+    // step → 聚焦目标节点 id（null = 全局 fitView）
+    const FIT_TARGET: Record<number, string | null> = {
+        1: null,              // subagents: 全局
+        2: "research-group",   // Research Group
+        3: "plan-group",       // Plan Group
+        4: "write-group",      // Write Group
+        5: "final-output",     // TaskOutput
+    };
+
+    // buildStep 变更时同步节点和边的显示
+    useEffect(() => {
+        setNodes(visibleNodes);
+        setEdges(visibleEdges);
+        const target = FIT_TARGET[buildStep];
+        if (target !== undefined) {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (target === null) {
+                        fitView({ duration: 500, padding: 0.3 });
+                    } else if (target !== "final-output") {
+                        fitView({ nodes: [{ id: target }], duration: 800, padding: 0.5 });
+                    } else {
+                        fitView({ nodes: [{ id: target }], duration: 800, padding: 1.5 });
+                    }
+                });
+            });
+        }
+    }, [buildStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const onConnect: OnConnect = useCallback(
         (params) => {
@@ -402,7 +455,7 @@ function FlowInner() {
                             +
                         </button>
                         <button
-                              onClick={() => zoomOut({ duration: 500 })}
+                            onClick={() => zoomOut({ duration: 500 })}
                             className="w-8 h-8 flex items-center justify-center text-lg font-semibold hover:bg-neutral-700/80 text-neutral-300 transition-colors"
                         >
                             −

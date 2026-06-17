@@ -67,7 +67,7 @@ const OrchestratorNode = ({ id, data, selected }: NodeProps) => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative animate-node-in">
             <div className={cn(
                 "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-2xl scale-90 flex items-center justify-center transition-all duration-400",
                 selected && d.status === "idle" ? "bg-pink-300 blur-xs scale-100" : statusGlow[d.status],

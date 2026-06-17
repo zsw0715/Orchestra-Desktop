@@ -24,6 +24,11 @@ interface WorkflowContextType {
     orchestrating: boolean;
     toggleOrchestrating: () => void;
 
+    /** 逐步展开：0=仅KB+Orchestrator, 5=全部 */
+    buildStep: number;
+    revealNext: () => void;
+    revealPrev: () => void;
+
     /** 切换宏观阶段 */
     advancePhase: (phase: WorkflowPhase) => void;
 
@@ -71,7 +76,13 @@ const WorkflowContext = createContext<WorkflowContextType | undefined>(undefined
 export function WorkflowProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WorkflowState>(demoState);
     const [orchestrating, setOrchestrating] = useState(false);
+    const [buildStep, setBuildStep] = useState(0);
     const toggleOrchestrating = useCallback(() => setOrchestrating((v) => !v), []);
+
+    const MAX_STEP = 5;
+
+    const revealNext = useCallback(() => setBuildStep((s) => Math.min(s + 1, MAX_STEP)), []);
+    const revealPrev = useCallback(() => setBuildStep((s) => Math.max(s - 1, 0)), []);
 
     const advancePhase = useCallback((phase: WorkflowPhase) => {
         setState((prev) => ({ ...prev, currentPhase: phase }));
@@ -143,12 +154,15 @@ export function WorkflowProvider({ children }: { children: ReactNode }) {
             state,
             orchestrating,
             toggleOrchestrating,
+            buildStep,
+            revealNext,
+            revealPrev,
             advancePhase,
             injectHumanSteering,
             updateAgentStatus,
             stepForward,
         }),
-        [state, orchestrating, toggleOrchestrating, advancePhase, injectHumanSteering, updateAgentStatus, stepForward],
+        [state, orchestrating, toggleOrchestrating, buildStep, revealNext, revealPrev, advancePhase, injectHumanSteering, updateAgentStatus, stepForward],
     );
 
     return (

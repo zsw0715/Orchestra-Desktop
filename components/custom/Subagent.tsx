@@ -72,7 +72,7 @@ const SubagentNode = ({ id, data, selected }: NodeProps) => {
     const ModelIcon = modelIcons[d.model_icon] ?? null;
 
     return (
-        <div className="relative">
+        <div className="relative animate-node-in">
             {/* 光晕 */}
             <div className={cn(
                 "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-2xl scale-90 flex items-center justify-center transition-all duration-400",

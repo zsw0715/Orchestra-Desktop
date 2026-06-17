@@ -87,7 +87,7 @@ const ExternalKBNode = ({ id, data, selected }: NodeProps) => {
     }, [contextMenu]);
 
     return (
-        <div className="relative">
+        <div className="relative animate-node-in">
             {/* 卡片 */}
             <div
                 onContextMenu={onContextMenu}

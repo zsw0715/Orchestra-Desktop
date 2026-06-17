@@ -18,7 +18,7 @@ const TaskPlanningNode = ({ id, data, selected }: NodeProps) => {
     const hiddenCount = d.messages.length - MAX_VISIBLE_MSGS;
 
     return (
-        <div className="relative">
+        <div className="relative animate-node-in">
             {/* 光晕 */}
             <div className={cn(
                 "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-2xl flex items-center justify-center transition-all duration-400",

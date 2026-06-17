@@ -18,7 +18,7 @@ const TaskOutputNode = ({ id, data, selected }: NodeProps) => {
     const hiddenCount = d.content.length - MAX_PREVIEW_CHARS;
 
     return (
-        <div className="relative">
+        <div className="relative animate-node-in">
             {/* 光晕 */}
             <div className={cn(
                 "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-2xl flex items-center justify-center transition-all duration-400",
@@ -28,7 +28,7 @@ const TaskOutputNode = ({ id, data, selected }: NodeProps) => {
             <div
                 onClick={focusThis}
                 className={cn(
-                    "relative w-128 h-28 rounded-2xl border border-neutral-700 px-4 pt-3 pb-3.5 backdrop-blur-3xl z-10 transition-colors duration-1000 cursor-pointer bg-[#1a1a1a]",
+                    "relative w-lg h-28 rounded-2xl border border-neutral-700 px-4 pt-3 pb-3.5 backdrop-blur-3xl z-10 transition-colors duration-1000 cursor-pointer bg-[#1a1a1a]",
                     selected && "border-neutral-400",
                 )}
             >
