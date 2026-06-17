@@ -1,0 +1,1 @@
+// this is actually placeholder for the component that renders the tool calls

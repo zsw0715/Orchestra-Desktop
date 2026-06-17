@@ -372,9 +372,14 @@ function FlowInner() {
         5: "final-output",     // TaskOutput
     };
 
-    // buildStep 变更时同步节点和边的显示
+    // buildStep 变更时同步节点和边的显示，保留已有节点的运行时数据（如 KB 文件）
     useEffect(() => {
-        setNodes(visibleNodes);
+        setNodes((currentNodes) => {
+            const dataByNodeId = new Map(currentNodes.map((n) => [n.id, n.data]));
+            return visibleNodes.map((n) =>
+                dataByNodeId.has(n.id) ? { ...n, data: dataByNodeId.get(n.id)! } : n,
+            );
+        });
         setEdges(visibleEdges);
         const target = FIT_TARGET[buildStep];
         if (target !== undefined) {
