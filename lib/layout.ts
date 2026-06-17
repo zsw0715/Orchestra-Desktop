@@ -31,6 +31,11 @@ interface ComputeLayoutResult {
     subagents: SubLayout[];
     research: SubLayout[];
     researchGroup: GroupLayout;
+    planning: SubLayout;
+    planningGroup: GroupLayout;
+    writing: SubLayout[];
+    writingGroup: GroupLayout;
+    taskOutput: SubLayout;
 }
 
 const ORCH_X = 500;
@@ -56,6 +61,31 @@ const RG_LABEL_H = 28;  // 标签区高度
 const RG_PAD_X = 16;
 const RG_PAD_TOP = 4;   // 标签区上方
 const RG_PAD_BOT = 6;
+
+// Plan 节点
+const PLAN_W = 608;     // w-152  固定宽度，不撑满
+const PLAN_H = 112;     // h-28
+const P_TO_R_GAP = 48;  // Research Group 底部 → Plan Group 顶部
+
+// Plan Group 内边距
+const PG_LABEL_H = 28;
+const PG_PAD_X = 16;
+const PG_PAD_TOP = 4;
+const PG_PAD_BOT = 6;
+
+// Write 节点
+const TASK_W_H = 132;  // TaskWriting h-33
+const P_TO_W_GAP = 132; // Plan Group 底部 → Write Group 顶部
+
+// Write Group 内边距
+const WG_LABEL_H = 28;
+const WG_PAD_X = 16;
+const WG_PAD_TOP = 4;
+const WG_PAD_BOT = 6;
+
+// FinalOutput 节点
+const FINAL_OUT_W = 512; // w-128
+const W_TO_F_GAP = 72;   // Write Group 底部 → FinalOutput 顶部
 
 /** 计算 Orchester 下方 N 个 Subagent 的居中水平排布坐标 */
 export function computeLayout(subCount: number): ComputeLayoutResult {
@@ -87,12 +117,46 @@ export function computeLayout(subCount: number): ComputeLayoutResult {
         y: RG_LABEL_H + RG_PAD_TOP,
     }));
 
+    // === Plan ===
+    const planGroupWidth = groupWidth; // 和 Research Group 一样宽
+    const planGroupHeight = PG_LABEL_H + PG_PAD_TOP + PLAN_H + PG_PAD_BOT;
+    const planGroupX = groupX;
+    const planGroupY = groupY + groupHeight + P_TO_R_GAP;
+
+    const planning: SubLayout = {
+        x: (planGroupWidth - PLAN_W) / 2,
+        y: PG_LABEL_H + PG_PAD_TOP,
+    };
+
+    // === Write ===
+    const writeGroupWidth = groupWidth;
+    const writeGroupHeight = WG_LABEL_H + WG_PAD_TOP + TASK_W_H + WG_PAD_BOT;
+    const writeGroupX = groupX;
+    const writeGroupY = planGroupY + planGroupHeight + P_TO_W_GAP;
+
+    const writing: SubLayout[] = Array.from({ length: subCount }, (_, i) => ({
+        x: WG_PAD_X + i * (SUB_WIDTH + SUB_GAP),
+        y: WG_LABEL_H + WG_PAD_TOP,
+    }));
+
+    // === FinalOutput ===
+    const taskOutputY = writeGroupY + writeGroupHeight + W_TO_F_GAP;
+    const taskOutput: SubLayout = {
+        x: groupX + groupWidth / 2 - FINAL_OUT_W / 2,
+        y: taskOutputY,
+    };
+
     return {
         knowledgeBase: { x: ORCH_X - KB_WIDTH_FILLED - KB_GAP_FILLED, y: ORCH_Y },
         orchestrator: { x: ORCH_X, y: ORCH_Y },
         subagents,
         research,
         researchGroup: { x: groupX, y: groupY, width: groupWidth, height: groupHeight },
+        planning,
+        planningGroup: { x: planGroupX, y: planGroupY, width: planGroupWidth, height: planGroupHeight },
+        writing,
+        writingGroup: { x: writeGroupX, y: writeGroupY, width: writeGroupWidth, height: writeGroupHeight },
+        taskOutput,
     };
 }
 

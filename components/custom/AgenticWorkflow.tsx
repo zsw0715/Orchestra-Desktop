@@ -19,8 +19,14 @@ import OrchestratorNode from "./Orchestrator";
 import Subagent from "./Subagent";
 import ExternalKB from "./ExternalKB";
 import TaskResearch from "./TaskResearch";
-import ResearchGroup from "./ResearchGroup";
-import type { OrchestratorData, SubagentData, KnowledgeBaseData, ResearchData } from "@/types/workflow";
+import ResearchGroup from "./GroupResearch";
+import TaskPlanning from "./TaskPlanning";
+import PlanningGroup from "./GroupPlanning";
+import TaskWriting from "./TaskWriting";
+import GroupWriting from "./GroupWriting";
+import TaskOutput from "./TaskOutput";
+import DeveloperPanel from "./DeveloperPanel";
+import type { OrchestratorData, SubagentData, KnowledgeBaseData, ResearchData, PlanData, WriteData, OutputData } from "@/types/workflow";
 import { computeLayout } from "@/lib/layout";
 import { useSidebar } from "@/context/SidebarContext";
 import { useWorkflow } from "@/context/WorkflowContext";
@@ -31,7 +37,12 @@ const nodeTypes = {
     subagent: Subagent,
     knowledgeBase: ExternalKB,
     taskResearch: TaskResearch,
-    group: ResearchGroup,
+    taskPlanning: TaskPlanning,
+    taskWriting: TaskWriting,
+    taskOutput: TaskOutput,
+    researchGroup: ResearchGroup,
+    planningGroup: PlanningGroup,
+    writingGroup: GroupWriting,
 };
 
 // MOCK DATA
@@ -170,7 +181,7 @@ const initialNodes: Node[] = [
     // ===== Research Group (sub-flow container) =====
     {
         id: "research-group",
-        type: "group",
+        type: "researchGroup",
         position: { x: layout.researchGroup.x, y: layout.researchGroup.y },
         style: { width: layout.researchGroup.width, height: layout.researchGroup.height },
         data: { label: "Research" },
@@ -221,6 +232,86 @@ const initialNodes: Node[] = [
             findings: [],
         } satisfies ResearchData,
     },
+    // ===== Plan Group + Planning 节点 =====
+    {
+        id: "plan-group",
+        type: "planningGroup",
+        position: { x: layout.planningGroup.x, y: layout.planningGroup.y },
+        style: { width: layout.planningGroup.width, height: layout.planningGroup.height },
+        data: { label: "Plan" },
+    },
+    {
+        id: "planning-1",
+        type: "taskPlanning",
+        position: layout.planning,
+        parentId: "plan-group",
+        data: {
+            label: "群聊协调",
+            status: "idle",
+            summary: "美食优先，住宿统一调整至观音桥商圈，景点以美食路线串联",
+            messages: [
+                { role: "住宿Agent", content: "解放碑方便但贵，建议观音桥性价比更高", timestamp: "10:30" },
+                { role: "美食Agent", content: "观音桥九街是夜宵天堂，住宿放那晚上能连吃3天", timestamp: "10:31" },
+                { role: "景点Agent", content: "长江索道和洪崖洞都在渝中，从观音桥打车15分钟", timestamp: "10:32" },
+            ],
+        } satisfies PlanData,
+    },
+    // ===== Write Group + Writing 节点 =====
+    {
+        id: "write-group",
+        type: "writingGroup",
+        position: { x: layout.writingGroup.x, y: layout.writingGroup.y },
+        style: { width: layout.writingGroup.width, height: layout.writingGroup.height },
+        data: { label: "Write" },
+    },
+    {
+        id: "write-lodging",
+        type: "taskWriting",
+        position: layout.writing[0],
+        parentId: "write-group",
+        data: {
+            label: "住宿 Section",
+            status: "idle",
+            subagentId: "subagent-lodging",
+            content: "建议住宿观音桥商圈，推荐酒店：观音桥希尔顿（4星，步行可达九街）、观音桥智选假日（性价比高）。预算400-600/晚。",
+        } satisfies WriteData,
+    },
+    {
+        id: "write-food",
+        type: "taskWriting",
+        position: layout.writing[1],
+        parentId: "write-group",
+        data: {
+            label: "美食 Section",
+            status: "idle",
+            subagentId: "subagent-food",
+            content: "Day1观音桥九街夜宵、Day2解放碑好吃街、Day3磁器口古镇。必吃：酸辣粉、陈麻花、晓彭肥肠鸡。",
+        } satisfies WriteData,
+    },
+    {
+        id: "write-sights",
+        type: "taskWriting",
+        position: layout.writing[2],
+        parentId: "write-group",
+        data: {
+            label: "景点 Section",
+            status: "idle",
+            subagentId: "subagent-sights",
+            content: "Day1洪崖洞+长江索道、Day2磁器口+南山一棵树、Day3观音桥周边自由探索。",
+        } satisfies WriteData,
+    },
+    // ===== FinalOutput 节点 =====
+    {
+        id: "final-output",
+        type: "taskOutput",
+        position: layout.taskOutput,
+        data: {
+            label: "最终产出",
+            status: "idle",
+            content: "五一重庆3日游攻略：Day1抵达观音桥入住→九街夜宵；Day2解放碑好吃街→洪崖洞→长江索道；Day3磁器口古镇→南山一棵树→返程。全程以美食串联动线，住宿观音桥希尔顿/智选假日，预算400-600/晚。必吃：酸辣粉、陈麻花、晓彭肥肠鸡。",
+            mergedFrom: ["write-lodging", "write-food", "write-sights"],
+        } satisfies OutputData,
+    },
 ];
 
 const initialEdges: Edge[] = [
@@ -230,6 +321,15 @@ const initialEdges: Edge[] = [
     { id: "e-sub-r-lodging", source: "subagent-lodging", target: "research-lodging", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
     { id: "e-sub-r-food", source: "subagent-food", target: "research-food", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
     { id: "e-sub-r-sights", source: "subagent-sights", target: "research-sights", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-r-lodging-p", source: "research-lodging", target: "planning-1", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-r-food-p", source: "research-food", target: "planning-1", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-r-sights-p", source: "research-sights", target: "planning-1", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-p-w-lodging", source: "planning-1", target: "write-lodging", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-p-w-food", source: "planning-1", target: "write-food", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-p-w-sights", source: "planning-1", target: "write-sights", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-w-lodging-f", source: "write-lodging", target: "final-output", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-w-food-f", source: "write-food", target: "final-output", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
+    { id: "e-w-sights-f", source: "write-sights", target: "final-output", animated: true, style: { stroke: "#737373" }, markerEnd: { type: MarkerType.ArrowClosed, color: "#737373", width: 20, height: 20 } },
 ];
 
 function FlowInner() {
@@ -346,6 +446,7 @@ function FlowInner() {
                         )}
                     </button>
                 </Panel>
+                <DeveloperPanel />
                 <Background gap={26} size={1} />
             </ReactFlow>
         </div>

@@ -57,7 +57,7 @@ const demoState: WorkflowState = {
     ],
     orchestratorDecisions: [],
     subagentResults: {},
-    finalOutput: null,
+    taskOutput: null,
 };
 
 // ============================================================

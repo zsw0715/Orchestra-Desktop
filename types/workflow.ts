@@ -144,7 +144,7 @@ export interface WorkflowState {
             humanFeedback: string | null;
         }
     >;
-    finalOutput: string | null;
+    taskOutput: string | null;
 }
 
 export interface WorkflowMessage {
@@ -160,7 +160,7 @@ export type AppNode =
     | Node<OrchestratorData, "orchestrator">
     | Node<SubagentData, "subagent">
     | Node<KnowledgeBaseData, "knowledgeBase">
-    | Node<ResearchData, "research">
-    | Node<PlanData, "plan">
-    | Node<WriteData, "write">
-    | Node<OutputData, "output">;
+    | Node<ResearchData, "taskResearch">
+    | Node<PlanData, "taskPlanning">
+    | Node<WriteData, "taskWriting">
+    | Node<OutputData, "taskOutput">
