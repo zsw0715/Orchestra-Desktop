@@ -3,27 +3,12 @@
 import AppSidebar from "@/components/studio/StudioSidebar";
 import AppMainContent from "@/components/studio/StudioMainContent";
 import { PanelLeftOpen, Home as HomeIcon } from "lucide-react";
-import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
-import { WorkflowProvider } from "@/context/WorkflowContext";
-import { DrawerProvider, useDrawer } from "@/context/DrawerContext";
-import { DialogProvider, useDialog } from "@/context/DialogContext";
+import { useSidebar } from "@/context/SidebarContext";
+import { useDrawer } from "@/context/DrawerContext";
+import { useDialog } from "@/context/DialogContext";
 import Link from "next/link";
 
 export default function StudioWorkspace({ studioId }: { studioId: string }) {
-    return (
-        <WorkflowProvider>
-            <SidebarProvider>
-                <DrawerProvider>
-                    <DialogProvider>
-                        <StudioWorkspaceInner studioId={studioId} />
-                    </DialogProvider>
-                </DrawerProvider>
-            </SidebarProvider>
-        </WorkflowProvider>
-    );
-}
-
-function StudioWorkspaceInner({ studioId }: { studioId: string }) {
     const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
     const { isOpen: isDrawerOpen } = useDrawer();
     const { isOpen: isDialogOpen } = useDialog();
