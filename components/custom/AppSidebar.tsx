@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelLeftClose } from "lucide-react";
+import { PanelLeftClose, Home as HomeIcon } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import ChatInput from "@/components/custom/ChatInput";
 import { cn } from "@/lib/utils";
@@ -26,8 +26,19 @@ export default function AppSidebar() {
             <div className="absolute right-2 top-2 p-1.5 rounded-md hover:bg-white/10 cursor-pointer transition-all duration-500" onClick={() => setIsSidebarOpen(false)}>
                 <PanelLeftClose className="w-4 h-4 text-[#b0b0b0]" />
             </div>
+            <div className="absolute right-10 top-2 p-1.5 rounded-md hover:bg-white/10 cursor-pointer transition-all duration-500" onClick={() => setIsSidebarOpen(false)}>
+                <HomeIcon className="w-4 h-4 text-[#b0b0b0]" />
+            </div>
             {/* 导航栏 */}
-            <div className="flex flex-1 flex-col mt-10 px-1.5 text-[#b0b0b0] rounded-[12px]">
+            {/* conversation title */}
+            <div className="absolute top-2.25 left-20 text-[#b0b0b0] text-[16px] font-bold w-[65%] cursor-pointer">
+                Conversation Title
+            </div>
+            <div className="flex flex-1 flex-col mt-10 px-1.5 text-[#b0b0b0] rounded-[12px] text-[14.5px]">
+                {/* conversation content */}
+                <div className="flex-1 flex items-center justify-center hover:bg-neutral-100/3 rounded-b-3xl rounded-t-md mb-8 mx-1.5 transition-colors duration-300">
+                    This is where human chat with the assistant.
+                </div>
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#2d2d2d]/50 backdrop-blur-xl shadow-lg w-[calc(100%-24px)] flex flex-col rounded-[19px] border border-[#373737] z-30">
                     <ChatInput />
                 </div>

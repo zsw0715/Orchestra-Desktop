@@ -2,7 +2,7 @@
 
 import AppSidebar from "@/components/custom/AppSidebar";
 import AppMainContent from "@/components/custom/AppMainContent";
-import { PanelLeftOpen } from "lucide-react";
+import { PanelLeftOpen, Home as HomeIcon } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import { useDrawer } from "@/context/DrawerContext";
 import { useDialog } from "@/context/DialogContext";
@@ -27,6 +27,12 @@ export default function Home() {
                     <>
                         <div
                             className="absolute z-20 top-2 left-22 p-1.25 rounded-md hover:bg-white/10 cursor-pointer transition-all duration-500"
+                            onClick={() => {}}
+                        >
+                            <HomeIcon className="w-4 h-4 text-[#b0b0b0]" />
+                        </div>
+                        <div
+                            className="absolute z-20 top-2 left-30 flex items-center p-1.25 rounded-md hover:bg-white/10 cursor-pointer transition-all duration-500"
                             onClick={() => setIsSidebarOpen(true)}
                         >
                             <PanelLeftOpen className="w-4 h-4 text-[#b0b0b0]" />
