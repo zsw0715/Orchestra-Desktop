@@ -5,12 +5,12 @@ import Link from "next/link";
 
 export default function Studio() {
     return (
-        <div className="flex-1 overflow-hidden rounded-[12.5px] bg-[#181818]">
+        <div className="flex-1 overflow-hidden rounded-[12.5px] bg-[#181818]/35">
             {/* 可拖动标题栏 */}
             <div className={`absolute top-0 left-0 w-full h-8 cursor-grabbing`} data-tauri-drag-region />
             <div className="flex flex-row h-[calc(100vh-7.5px)] transition-transform duration-500 ease-out">
                 {/* left side */}
-                <div className="w-64 h-full mt-12 flex flex-col px-3 gap-5 overflow-y-auto">
+                <div className="w-64 h-full mt-12 flex flex-col px-1.5 gap-5 overflow-y-auto">
                     {/* Dashboard */}
                     <Link href="/" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/30 transition-colors">
                         <Gauge className="w-4 h-4" />
@@ -69,7 +69,7 @@ export default function Studio() {
                         Studio
                     </div>
                     {/* operation area */}
-                    <div className="flex-1 flex justify-center items-center rounded-tl-3xl rounded-br-[12.5px] bg-linear-to-br from-neutral-700/30 to-neutral-800/40 border border-b-0 border-r-0 border-neutral-500/20 shadow-[0_0_40px_rgba(255,255,255,0.03)]">
+                    <div className="flex-1 flex justify-center items-center rounded-tl-3xl rounded-tr-xl  rounded-br-[12.5px] bg-linear-to-br from-neutral-800 to-neutral-900 border border-b-0 border-r-0 border-neutral-500/20 shadow-[0_0_25px_rgba(35,35,35,0.35)]">
                         <Link
                             href="/studio/12345"
                             className="px-6 py-2.5 mt-2 bg-neutral-200/90 text-neutral-900 rounded-lg font-medium text-sm hover:bg-neutral-100 transition-colors"
